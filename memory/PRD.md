@@ -48,6 +48,14 @@ An anti-commission, roots-connected Indian travel discovery platform. Genuine hi
     - Stories preview strip added on destination detail pages
     - Seeded 3 sample stories (Kashmir, Coorg, Andaman)
 
+## Updated (28 Jul 2026 — Iteration 3)
+- [x] **Rentals + Local Guides sections** added to every destination:
+    - Each destination has 2-3 rental options (bike/scooter/auto/cab/shikara/cycle) with vendor name, vehicle type, ₹/day, coords, note
+    - Each destination has 2 local guides with name, specialty, languages, ₹/day, coords, backstory
+    - Union rate / no-commission messaging built into UI
+    - Map now shows 4 pin colors: theme-color (stays), dark (food), orange (rentals), purple (guides)
+    - New sections rendered between "food" and "map" on `/destination/:slug`
+
 ## Backlog / Future
 - **P1**: Community stories page (write-ups, not just reviews)
 - **P1**: Add more destinations (Kashmir, Coorg, Andaman, Kanyakumari) with unique themes

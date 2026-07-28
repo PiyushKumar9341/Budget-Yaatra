@@ -49,6 +49,15 @@ DESTINATIONS_SEED = [
             {"name": "Trattoria, Police Bazaar", "dish": "Jadoh + Doh Khlieh", "price": 180, "lat": 25.5760, "lng": 91.8933, "note": "Tiny local Khasi kitchen since 1979"},
             {"name": "Delhi Mistan Bhandar (chai stall)", "dish": "Cutting chai + samosa", "price": 30, "lat": 25.5770, "lng": 91.8933, "note": "Chhoti si dukaan, best chai in Shillong"},
             {"name": "Cafe Shillong (bakery corner)", "dish": "Sohra pork + red rice", "price": 250, "lat": 25.5695, "lng": 91.8811, "note": "Local musicians play live"}
+        ],
+        "rentals": [
+            {"name": "Ri Kynjai Bike Rentals, Police Bazaar", "type": "Scooter/Bike", "vehicle": "Activa / Royal Enfield", "price_per_day": 800, "lat": 25.5762, "lng": 91.8935, "note": "No paperwork drama, Aadhar copy enough"},
+            {"name": "Dorbar Auto Stand, Sohra", "type": "Shared Auto", "vehicle": "Auto to root bridges", "price_per_day": 400, "lat": 25.2700, "lng": 91.7325, "note": "Group of 4, 1 day trip to Nongriat base"},
+            {"name": "Nongriat Bamboo Cycles", "type": "Cycle", "vehicle": "Mountain cycle", "price_per_day": 250, "lat": 25.2565, "lng": 91.7150, "note": "For village-hopping, chhoti dukaan"}
+        ],
+        "guides": [
+            {"name": "Bah Nikhil Khongsit", "specialty": "Living root bridges + Khasi folklore", "price_per_day": 900, "languages": "Khasi, Hindi, English", "lat": 25.2698, "lng": 91.7325, "note": "Local Khasi guide, ex-teacher, 12 yrs experience"},
+            {"name": "Iaishah Village Guide Collective", "specialty": "Mawlynnong + waterfalls", "price_per_day": 700, "languages": "Khasi, English", "lat": 25.2005, "lng": 91.9166, "note": "Community-run, women-led group"}
         ]
     },
     {
@@ -72,6 +81,15 @@ DESTINATIONS_SEED = [
             {"name": "Tibetan Kitchen, Fort Road", "dish": "Momos + Thukpa", "price": 200, "lat": 34.1655, "lng": 77.5843, "note": "Run by refugee family, 20+ years"},
             {"name": "Lala's Cafe (old town)", "dish": "Apricot juice + khambir bread", "price": 120, "lat": 34.1620, "lng": 77.5859, "note": "Inside 400 yr old Ladakhi house"},
             {"name": "Neha Snacks, Leh Bazaar", "dish": "Skyu (Ladakhi pasta)", "price": 150, "lat": 34.1636, "lng": 77.5850, "note": "Auntie ki chhoti dukaan"}
+        ],
+        "rentals": [
+            {"name": "Ladakh Bike House, Fort Road", "type": "Bike", "vehicle": "Royal Enfield Himalayan", "price_per_day": 1400, "lat": 34.1650, "lng": 77.5843, "note": "Best for Pangong / Nubra, helmet included"},
+            {"name": "Tsering Taxi Union", "type": "Shared Taxi", "vehicle": "Innova / Xylo", "price_per_day": 4500, "lat": 34.1642, "lng": 77.5845, "note": "Local union rate — no online booking markup"},
+            {"name": "Old Town Cycle Wallah", "type": "Cycle", "vehicle": "MTB", "price_per_day": 300, "lat": 34.1636, "lng": 77.5850, "note": "For Leh city ride, downhill fun"}
+        ],
+        "guides": [
+            {"name": "Stanzin Namgail", "specialty": "Himalayan trekking + monasteries", "price_per_day": 1500, "languages": "Ladakhi, Hindi, English", "lat": 34.1650, "lng": 77.5850, "note": "Certified mountaineer, born in Leh"},
+            {"name": "Deldan (bike tour lead)", "specialty": "Nubra + Pangong bike route safety", "price_per_day": 1200, "languages": "Hindi, English", "lat": 34.1640, "lng": 77.5840, "note": "Ex-army, 15+ Ladakh rides led"}
         ]
     },
     {
@@ -95,6 +113,15 @@ DESTINATIONS_SEED = [
             {"name": "Chotiwala Restaurant, Swarg Ashram", "dish": "Thali + lassi", "price": 200, "lat": 30.1178, "lng": 78.3224, "note": "Iconic since 1958, purely veg"},
             {"name": "Baba Kali Kamli Wala (chai)", "dish": "Ginger chai + mathri", "price": 25, "lat": 30.1191, "lng": 78.3222, "note": "Sadhu ki dukaan near ghat"},
             {"name": "Little Buddha Cafe", "dish": "Curd rice + falafel", "price": 250, "lat": 30.1265, "lng": 78.3140, "note": "Overlooks the Ganga"}
+        ],
+        "rentals": [
+            {"name": "Ganga Bike Rentals, Tapovan", "type": "Scooter", "vehicle": "Activa / Jupiter", "price_per_day": 500, "lat": 30.1279, "lng": 78.3134, "note": "10 min from Lakshman Jhula, DL needed"},
+            {"name": "Rishikesh Auto Union Stand", "type": "Shared Auto", "vehicle": "Auto to Neelkanth", "price_per_day": 300, "lat": 30.1050, "lng": 78.2933, "note": "Fixed union rate, no bargaining stress"},
+            {"name": "Cycle Yatra, Swarg Ashram", "type": "Cycle", "vehicle": "Hybrid cycle", "price_per_day": 200, "lat": 30.1178, "lng": 78.3224, "note": "For ghat-to-ghat exploration"}
+        ],
+        "guides": [
+            {"name": "Pandit Anil Ji", "specialty": "Aarti + spiritual walks + ashram history", "price_per_day": 600, "languages": "Hindi, English, Sanskrit basics", "lat": 30.1191, "lng": 78.3222, "note": "3rd gen priest family, gentle storyteller"},
+            {"name": "Adventure Ashram Team", "specialty": "Rafting + Beatles ashram trail", "price_per_day": 800, "languages": "Hindi, English", "lat": 30.1279, "lng": 78.3134, "note": "Certified river guides, safety-first"}
         ]
     },
     {
@@ -118,6 +145,15 @@ DESTINATIONS_SEED = [
             {"name": "Sher-e-Punjab Dhaba, Mall Road", "dish": "Rajma chawal", "price": 150, "lat": 32.2432, "lng": 77.1892, "note": "Truck driver approved since 1972"},
             {"name": "Cafe 1947, Old Manali", "dish": "Trout fish + apple pie", "price": 350, "lat": 32.2601, "lng": 77.1743, "note": "Beas river view, live music"},
             {"name": "Johnson's Bakery", "dish": "Apple strudel + coffee", "price": 180, "lat": 32.2411, "lng": 77.1899, "note": "Grandma still bakes daily"}
+        ],
+        "rentals": [
+            {"name": "Manali Bike Point, Mall Road", "type": "Bike", "vehicle": "Royal Enfield / Himalayan", "price_per_day": 1200, "lat": 32.2432, "lng": 77.1892, "note": "For Rohtang / Spiti circuit"},
+            {"name": "Old Manali Scooter Wallah", "type": "Scooter", "vehicle": "Activa", "price_per_day": 600, "lat": 32.2582, "lng": 77.1737, "note": "Kunal bhai, ID copy + Rs 500 deposit"},
+            {"name": "Solang Valley Cabs", "type": "Shared Taxi", "vehicle": "Innova for day trip", "price_per_day": 3000, "lat": 32.3167, "lng": 77.1583, "note": "Union rate, split with 6 pax"}
+        ],
+        "guides": [
+            {"name": "Tashi (Old Manali Treks)", "specialty": "Bhrigu Lake + Jogini falls", "price_per_day": 1000, "languages": "Hindi, English, basic Israeli", "lat": 32.2590, "lng": 77.1740, "note": "20+ yrs, Beas Kund permit expert"},
+            {"name": "Hidimba Cultural Walk", "specialty": "Kullu-Manali temples + folk", "price_per_day": 500, "languages": "Hindi, Kullvi", "lat": 32.2489, "lng": 77.1836, "note": "Local heritage volunteer"}
         ]
     },
     {
@@ -141,6 +177,14 @@ DESTINATIONS_SEED = [
             {"name": "Himalayan Cafe, Kaza", "dish": "Chhurpi soup + tingmo", "price": 180, "lat": 32.2265, "lng": 78.0720, "note": "Only 4 tables, run by monks' family"},
             {"name": "Sol Cafe, Kaza market", "dish": "Seabuckthorn juice + momos", "price": 200, "lat": 32.2271, "lng": 78.0712, "note": "Bookshelf + vinyl records"},
             {"name": "Kunzum Top Chai Stall", "dish": "Maggi + kahwa", "price": 80, "lat": 32.4103, "lng": 77.6383, "note": "15,000 ft, chhoti tapri"}
+        ],
+        "rentals": [
+            {"name": "Spiti Bike Rentals, Kaza", "type": "Bike", "vehicle": "Royal Enfield 350", "price_per_day": 1300, "lat": 32.2265, "lng": 78.0715, "note": "Only local shop, high-altitude tuned"},
+            {"name": "Kaza Taxi Union", "type": "Shared Taxi", "vehicle": "Xylo for circuit", "price_per_day": 5000, "lat": 32.2264, "lng": 78.0712, "note": "Kibber + Langza + Key covered"}
+        ],
+        "guides": [
+            {"name": "Chhering Dorje", "specialty": "Fossils, monastery walks, homestay circuit", "price_per_day": 1200, "languages": "Spitian, Hindi, English", "lat": 32.2264, "lng": 78.0715, "note": "Born in Langza, guides since 2008"},
+            {"name": "Ecosphere Spiti", "specialty": "Snow leopard tracking + Pin Valley", "price_per_day": 2000, "languages": "Hindi, English", "lat": 32.2260, "lng": 78.0715, "note": "Local NGO, conservation-focused"}
         ]
     },
     {
@@ -162,6 +206,14 @@ DESTINATIONS_SEED = [
         "food_spots": [
             {"name": "Roll House, MG Marg Gangtok", "dish": "Beef momo + phaley", "price": 150, "lat": 27.3389, "lng": 88.6065, "note": "Rolls since 1985"},
             {"name": "Baker's Cafe, Gangtok", "dish": "Wai wai chowmein", "price": 100, "lat": 27.3308, "lng": 88.6120, "note": "Students hangout"}
+        ],
+        "rentals": [
+            {"name": "Sikkim Bike Wala, MG Marg", "type": "Scooter/Bike", "vehicle": "Activa / Duke 250", "price_per_day": 900, "lat": 27.3389, "lng": 88.6065, "note": "For Gangtok city + short hops"},
+            {"name": "North Sikkim Shared Cab Stand", "type": "Shared Taxi", "vehicle": "Sumo to Lachung/Yumthang", "price_per_day": 600, "lat": 27.3305, "lng": 88.6115, "note": "Per seat basis, book 1 day ahead"}
+        ],
+        "guides": [
+            {"name": "Karma (Yuksom Trek Lead)", "specialty": "Goecha La + Kanchenjunga base treks", "price_per_day": 1300, "languages": "Sikkimese, Hindi, English", "lat": 27.3706, "lng": 88.2211, "note": "Certified mountaineer, 18 yrs"},
+            {"name": "Pemayangtse Heritage Walk", "specialty": "Monasteries + Buddhist history", "price_per_day": 700, "languages": "Hindi, English", "lat": 27.3050, "lng": 88.2469, "note": "Monk-trained cultural guide"}
         ]
     },
     {
@@ -183,6 +235,14 @@ DESTINATIONS_SEED = [
         "food_spots": [
             {"name": "Evergreen Cafe, Kasol", "dish": "Shakshuka + hummus", "price": 220, "lat": 32.0113, "lng": 77.3155, "note": "Israeli couple's tiny cafe"},
             {"name": "Buddha Place, Tosh", "dish": "Trout thali", "price": 250, "lat": 32.0245, "lng": 77.3728, "note": "Cliffside seating"}
+        ],
+        "rentals": [
+            {"name": "Kasol Bike Point", "type": "Bike/Scooter", "vehicle": "Activa / Bullet", "price_per_day": 700, "lat": 32.0104, "lng": 77.3155, "note": "For Tosh/Malana runs, ID needed"},
+            {"name": "Parvati Cab Union", "type": "Shared Taxi", "vehicle": "Tempo to Manikaran/Barshaini", "price_per_day": 200, "lat": 32.0100, "lng": 77.3150, "note": "Per seat, morning + evening"}
+        ],
+        "guides": [
+            {"name": "Kheerganga Trail Guides Co-op", "specialty": "Kheerganga + Tosh + Malana treks", "price_per_day": 800, "languages": "Hindi, English, basic Hebrew", "lat": 32.0108, "lng": 77.3160, "note": "Local Parvati Valley collective"},
+            {"name": "Ram (photo trail expert)", "specialty": "Instagram photo spots + hidden waterfalls", "price_per_day": 600, "languages": "Hindi, English", "lat": 32.0245, "lng": 77.3728, "note": "Great for solo Gen-Z travellers"}
         ]
     },
     {
@@ -203,6 +263,14 @@ DESTINATIONS_SEED = [
         ],
         "food_spots": [
             {"name": "Dragon Restaurant, Old Market", "dish": "Thukpa + zan (millet cake)", "price": 200, "lat": 27.5850, "lng": 91.8590, "note": "Grandma-run Monpa kitchen"}
+        ],
+        "rentals": [
+            {"name": "Bomdila Cab Union", "type": "Shared Taxi", "vehicle": "Innova (Guwahati → Tawang)", "price_per_day": 6000, "lat": 27.2647, "lng": 92.4247, "note": "2-day journey, split among 6"},
+            {"name": "Tawang Sumo Stand", "type": "Shared Sumo", "vehicle": "Sumo for Sela + Bumla", "price_per_day": 400, "lat": 27.5859, "lng": 91.8594, "note": "Per seat rate to nearby passes"}
+        ],
+        "guides": [
+            {"name": "Lobsang (Tawang Monastery walks)", "specialty": "Monastery history + Monpa culture", "price_per_day": 900, "languages": "Monpa, Hindi, English", "lat": 27.5860, "lng": 91.8600, "note": "Ex-monk, spent 8 yrs at Tawang gompa"},
+            {"name": "Sela Pass Adventure", "specialty": "High-altitude photo + lake trails", "price_per_day": 1100, "languages": "Hindi, English", "lat": 27.5000, "lng": 92.1042, "note": "Winter permits handled"}
         ]
     },
     {
@@ -226,6 +294,15 @@ DESTINATIONS_SEED = [
             {"name": "Ahdoos, Residency Road", "dish": "Rogan josh + tabak maaz", "price": 350, "lat": 34.0836, "lng": 74.7995, "note": "Iconic Kashmiri wazwan since 1918"},
             {"name": "Krishna Dhaba, Durga Nag", "dish": "Rajma chawal + kahwa", "price": 150, "lat": 34.0854, "lng": 74.8390, "note": "Locals-only, run by 3 generations"},
             {"name": "Chai Jaai, Habba Kadal", "dish": "Nun chai + sheermal", "price": 80, "lat": 34.0997, "lng": 74.8103, "note": "Tiny corner shop near old city bridge"}
+        ],
+        "rentals": [
+            {"name": "Dal Lake Shikara Ghat 3", "type": "Shikara", "vehicle": "Traditional wooden shikara", "price_per_day": 800, "lat": 34.1114, "lng": 74.8797, "note": "Half-day rate, no commission — direct owner"},
+            {"name": "Srinagar Auto Stand, Lal Chowk", "type": "Auto", "vehicle": "Auto in Srinagar city", "price_per_day": 500, "lat": 34.0836, "lng": 74.7995, "note": "Fixed union rate for city hopping"},
+            {"name": "Pahalgam Pony Wallah Union", "type": "Pony", "vehicle": "Horse for Baisaran valley", "price_per_day": 700, "lat": 34.0161, "lng": 75.3211, "note": "Regulated union, no bargaining"}
+        ],
+        "guides": [
+            {"name": "Bilal (Kashmir Cultural Walks)", "specialty": "Old Srinagar + shrines + hidden mosques", "price_per_day": 1000, "languages": "Kashmiri, Urdu, English", "lat": 34.0997, "lng": 74.8103, "note": "3rd gen Srinagar local, historian"},
+            {"name": "Gulmarg Ski Instructor Union", "specialty": "Skiing + gondola safety", "price_per_day": 1500, "languages": "Kashmiri, Hindi, English", "lat": 34.0500, "lng": 74.3800, "note": "Certified J&K tourism"}
         ]
     },
     {
@@ -249,6 +326,14 @@ DESTINATIONS_SEED = [
             {"name": "Coorg Cuisine, Madikeri", "dish": "Pandi curry + akki roti", "price": 250, "lat": 12.4194, "lng": 75.7300, "note": "Family recipe, no tourist menu"},
             {"name": "Anna's Bakery, KP Road", "dish": "Coorg coffee + banana chips", "price": 60, "lat": 12.4210, "lng": 75.7404, "note": "Chhoti dukaan, cash only, since 1971"},
             {"name": "Raintree Cafe, Coorg", "dish": "Kadambuttu + mushroom curry", "price": 220, "lat": 12.4180, "lng": 75.7392, "note": "Rain-forest view balcony seating"}
+        ],
+        "rentals": [
+            {"name": "Madikeri Bike Rentals", "type": "Scooter/Bike", "vehicle": "Activa / Bullet", "price_per_day": 700, "lat": 12.4204, "lng": 75.7397, "note": "For estate hopping, DL required"},
+            {"name": "Coorg Cab Union, Madikeri", "type": "Cab", "vehicle": "Innova for full-day", "price_per_day": 2800, "lat": 12.4200, "lng": 75.7400, "note": "Fixed rate, no online markup"}
+        ],
+        "guides": [
+            {"name": "Poovaiah (Coffee Estate Walks)", "specialty": "Coffee cultivation + Kodava culture", "price_per_day": 800, "languages": "Kodava, Kannada, English", "lat": 12.4204, "lng": 75.7397, "note": "Family owns 3rd-gen estate"},
+            {"name": "Dubare Elephant Trainer", "specialty": "Ethical elephant interaction + jungle walk", "price_per_day": 600, "languages": "Kannada, Hindi", "lat": 12.2703, "lng": 75.9128, "note": "Govt-affiliated mahout"}
         ]
     },
     {
@@ -272,6 +357,15 @@ DESTINATIONS_SEED = [
             {"name": "Full Moon Cafe, Havelock", "dish": "Grilled tuna + coconut rice", "price": 300, "lat": 11.9769, "lng": 92.9868, "note": "Beach shack, hammocks + reggae"},
             {"name": "Annapurna, Aberdeen Bazaar", "dish": "Fish thali + tender coconut", "price": 180, "lat": 11.6690, "lng": 92.7454, "note": "Local Bengali kitchen, no menu"},
             {"name": "Something Different Cafe, Neil", "dish": "Homemade pesto pasta + lassi", "price": 250, "lat": 11.8300, "lng": 93.0500, "note": "Israeli-Indian couple, live music Fri"}
+        ],
+        "rentals": [
+            {"name": "Havelock Scooter Point", "type": "Scooter", "vehicle": "Activa", "price_per_day": 500, "lat": 11.9800, "lng": 92.9631, "note": "Best for jetty ↔ Radhanagar rides"},
+            {"name": "Blue Water Divers, Havelock", "type": "Scuba/Snorkel gear", "vehicle": "Full snorkel kit", "price_per_day": 400, "lat": 11.9790, "lng": 92.9800, "note": "PADI certified, ethical corals"},
+            {"name": "Neil Island Cycle Wala", "type": "Cycle", "vehicle": "Cycle for island loop", "price_per_day": 150, "lat": 11.8322, "lng": 93.0428, "note": "Cash only, cover whole Neil in a day"}
+        ],
+        "guides": [
+            {"name": "Andaman Bubbles Dive Team", "specialty": "Scuba diving intro + coral safety", "price_per_day": 3500, "languages": "Hindi, English", "lat": 11.9800, "lng": 92.9631, "note": "Includes full gear + open-water intro"},
+            {"name": "Ross Island Naturalist", "specialty": "British ruins + island history walk", "price_per_day": 600, "languages": "Bengali, Hindi, English", "lat": 11.6810, "lng": 92.7500, "note": "History teacher turned guide"}
         ]
     }
 ]

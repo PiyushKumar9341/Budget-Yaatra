@@ -6,7 +6,7 @@ import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import L from "leaflet";
 import { useTheme } from "@/context/ThemeContext";
 import { useAuth } from "@/context/AuthContext";
-import { Heart, MessageCircle, MapPin, Utensils, BedDouble, Star, Calendar, Wallet } from "lucide-react";
+import { Heart, MessageCircle, MapPin, Utensils, BedDouble, Star, Calendar, Wallet, Bike, UserRound } from "lucide-react";
 import ChatDrawer from "@/components/ChatDrawer";
 import ReviewForm from "@/components/ReviewForm";
 import { toast } from "sonner";
@@ -152,6 +152,61 @@ export default function DestinationPage() {
                 </div>
             </section>
 
+            {/* RENTALS */}
+            {dest.rentals?.length > 0 && (
+                <section className="max-w-[1400px] mx-auto px-6 md:px-10 py-12">
+                    <div className="flex items-end justify-between mb-8">
+                        <div>
+                            <p className="font-editorial-italic opacity-70">Ghumne ka intezaam</p>
+                            <h2 className="font-display text-4xl md:text-5xl tracking-tighter">Rent a ride</h2>
+                        </div>
+                        <p className="font-editorial-italic opacity-70 hidden md:block">Bikes, autos, cabs — union rate, no commission</p>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-5" data-testid="rentals-grid">
+                        {dest.rentals.map((r, i) => (
+                            <div key={i} className="by-card">
+                                <div className="flex items-center gap-2 text-xs uppercase tracking-widest opacity-60 mb-3">
+                                    <Bike className="w-4 h-4" /> {r.type}
+                                </div>
+                                <h3 className="font-display text-2xl tracking-tight">{r.name}</h3>
+                                <p className="font-editorial mt-2 text-lg">{r.vehicle}</p>
+                                <p className="font-editorial-italic mt-2 opacity-70 text-sm">{r.note}</p>
+                                <p className="mt-4 text-sm"><span className="font-display text-xl">₹{r.price_per_day}</span><span className="opacity-60"> /day</span></p>
+                            </div>
+                        ))}
+                    </div>
+                </section>
+            )}
+
+            {/* GUIDES */}
+            {dest.guides?.length > 0 && (
+                <section className="max-w-[1400px] mx-auto px-6 md:px-10 py-12">
+                    <div className="flex items-end justify-between mb-8">
+                        <div>
+                            <p className="font-editorial-italic opacity-70">Kahaani sunane wale</p>
+                            <h2 className="font-display text-4xl md:text-5xl tracking-tighter">Local guides</h2>
+                        </div>
+                        <p className="font-editorial-italic opacity-70 hidden md:block">Real locals · real stories</p>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5" data-testid="guides-grid">
+                        {dest.guides.map((g, i) => (
+                            <div key={i} className="by-card">
+                                <div className="flex items-center gap-2 text-xs uppercase tracking-widest opacity-60 mb-3">
+                                    <UserRound className="w-4 h-4" /> Local guide
+                                </div>
+                                <h3 className="font-display text-2xl tracking-tight">{g.name}</h3>
+                                <p className="font-editorial mt-2 text-lg">{g.specialty}</p>
+                                <p className="font-editorial-italic mt-2 opacity-70 text-sm">{g.note}</p>
+                                <div className="mt-4 flex items-center justify-between text-sm">
+                                    <span className="opacity-70">Speaks: {g.languages}</span>
+                                    <span><span className="font-display text-xl">₹{g.price_per_day}</span><span className="opacity-60"> /day</span></span>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </section>
+            )}
+
             {/* MAP */}
             <section className="max-w-[1400px] mx-auto px-6 md:px-10 py-12">
                 <h2 className="font-display text-4xl md:text-5xl tracking-tighter mb-8">On the map</h2>
@@ -171,9 +226,19 @@ export default function DestinationPage() {
                                 <Popup><b>{f.name}</b><br />{f.dish} · ~₹{f.price}</Popup>
                             </Marker>
                         ))}
+                        {dest.rentals?.map((r, i) => (
+                            <Marker key={`r${i}`} position={[r.lat, r.lng]} icon={makeIcon("#e8873a")}>
+                                <Popup><b>{r.name}</b><br />{r.vehicle} · ₹{r.price_per_day}/day</Popup>
+                            </Marker>
+                        ))}
+                        {dest.guides?.map((g, i) => (
+                            <Marker key={`g${i}`} position={[g.lat, g.lng]} icon={makeIcon("#6b46c1")}>
+                                <Popup><b>{g.name}</b><br />{g.specialty} · ₹{g.price_per_day}/day</Popup>
+                            </Marker>
+                        ))}
                     </MapContainer>
                 </div>
-                <p className="mt-3 text-xs opacity-60 font-editorial-italic">Colored pins = stays · Dark pins = food spots</p>
+                <p className="mt-3 text-xs opacity-60 font-editorial-italic">Colored pins = stays · Dark = food · Orange = rentals · Purple = guides</p>
             </section>
 
             {/* REVIEWS */}
