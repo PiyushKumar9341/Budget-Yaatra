@@ -10,6 +10,9 @@ import DestinationPage from "@/pages/DestinationPage";
 import PlannerPage from "@/pages/PlannerPage";
 import MyTripsPage from "@/pages/MyTripsPage";
 import AuthCallback from "@/pages/AuthCallback";
+import StoriesPage from "@/pages/StoriesPage";
+import StoryDetail from "@/pages/StoryDetail";
+import StoryEditor from "@/pages/StoryEditor";
 
 function AppRouter() {
     const location = useLocation();
@@ -24,6 +27,9 @@ function AppRouter() {
                 <Route path="/destination/:slug" element={<DestinationPage />} />
                 <Route path="/planner" element={<PlannerPage />} />
                 <Route path="/mine" element={<MyTripsPage />} />
+                <Route path="/stories" element={<StoriesPage />} />
+                <Route path="/stories/new" element={<StoryEditor />} />
+                <Route path="/stories/:id" element={<StoryDetail />} />
                 <Route path="*" element={<Landing />} />
             </Routes>
         </Layout>

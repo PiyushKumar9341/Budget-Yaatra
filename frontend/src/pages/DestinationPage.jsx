@@ -27,6 +27,7 @@ export default function DestinationPage() {
     const { user } = useAuth();
     const [dest, setDest] = useState(null);
     const [reviews, setReviews] = useState([]);
+    const [stories, setStories] = useState([]);
     const [chatOpen, setChatOpen] = useState(false);
     const [inWishlist, setInWishlist] = useState(false);
 
@@ -34,6 +35,7 @@ export default function DestinationPage() {
         setDestination(slug);
         axios.get(`${API}/destinations/${slug}`).then((r) => setDest(r.data)).catch(() => {});
         axios.get(`${API}/destinations/${slug}/reviews`).then((r) => setReviews(r.data)).catch(() => {});
+        axios.get(`${API}/stories?destination_slug=${slug}`).then((r) => setStories(r.data.slice(0, 3))).catch(() => {});
         return () => setDestination("base");
     }, [slug, setDestination]);
 
@@ -180,6 +182,45 @@ export default function DestinationPage() {
                     <h2 className="font-display text-4xl md:text-5xl tracking-tighter">Genuine yatri stories</h2>
                     <p className="font-editorial-italic opacity-70 hidden md:block">Only from real travellers who logged in</p>
                 </div>
+
+                {/* Community Stories preview */}
+                {(stories.length > 0 || user) && (
+                    <div className="mb-10">
+                        <div className="flex items-end justify-between mb-4">
+                            <p className="font-editorial-italic text-xl opacity-80">Long-form yatri diaries</p>
+                            <div className="flex gap-3">
+                                {user && (
+                                    <Link to={`/stories/new?dest=${slug}`} data-testid="write-story-from-dest" className="text-sm underline opacity-80 hover:opacity-100">
+                                        Write yours →
+                                    </Link>
+                                )}
+                                {stories.length > 0 && (
+                                    <Link to={`/stories?dest=${slug}`} className="text-sm underline opacity-80 hover:opacity-100">
+                                        See all →
+                                    </Link>
+                                )}
+                            </div>
+                        </div>
+                        {stories.length > 0 ? (
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-5" data-testid="dest-stories">
+                                {stories.map((s) => (
+                                    <Link key={s.story_id} to={`/stories/${s.story_id}`} className="by-card block group">
+                                        <div className="relative overflow-hidden rounded-2xl h-36 mb-3 -mx-2 -mt-2">
+                                            <img src={s.cover_image} alt="" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                                        </div>
+                                        <p className="text-xs uppercase tracking-widest opacity-60">{s.read_time_min} min · {s.author_name}</p>
+                                        <h4 className="font-display text-xl tracking-tight mt-1 group-hover:italic transition-all">{s.title}</h4>
+                                    </Link>
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="by-card text-center py-8">
+                                <p className="font-editorial-italic opacity-70">No long-form stories yet for {dest.name}.</p>
+                                <Link to={`/stories/new?dest=${slug}`} className="pill-btn mt-4 inline-flex">Write the first one</Link>
+                            </div>
+                        )}
+                    </div>
+                )}
 
                 {user ? (
                     <ReviewForm slug={slug} onCreated={(r) => setReviews([r, ...reviews])} />

@@ -204,6 +204,75 @@ DESTINATIONS_SEED = [
         "food_spots": [
             {"name": "Dragon Restaurant, Old Market", "dish": "Thukpa + zan (millet cake)", "price": 200, "lat": 27.5850, "lng": 91.8590, "note": "Grandma-run Monpa kitchen"}
         ]
+    },
+    {
+        "slug": "kashmir",
+        "name": "Kashmir",
+        "tagline": "Chinar leaves, shikara rides — paradise on earth",
+        "region": "Himalayas",
+        "state": "Jammu & Kashmir",
+        "best_season": "Apr – Oct (summer), Dec – Feb (snow)",
+        "budget_per_day": 2000,
+        "vibe": "Chinar red, dal lake teal, saffron warmth, snow mountain",
+        "hero_image": "https://images.unsplash.com/photo-1595815771614-ade9d652a65d?w=1600&q=85",
+        "coords": {"lat": 34.0837, "lng": 74.7973},
+        "highlights": ["Shikara ride on Dal Lake", "Gulmarg gondola (world's 2nd highest)", "Pahalgam Betaab Valley", "Sonmarg meadows", "Mughal gardens - Shalimar Bagh"],
+        "stays": [
+            {"name": "Zaina Kadal Houseboat, Dal Lake", "type": "Houseboat", "price": 1400, "note": "Wooden carvings, kahwa served on deck", "lat": 34.1114, "lng": 74.8797},
+            {"name": "Pahalgam Village Homestay", "type": "Homestay", "price": 900, "note": "Lidder river next door, walnut wood house", "lat": 34.0161, "lng": 75.3211},
+            {"name": "Aru Valley Shepherd Camp", "type": "Tent", "price": 1200, "note": "Base camp for treks, bonfire nights", "lat": 34.1006, "lng": 75.2650}
+        ],
+        "food_spots": [
+            {"name": "Ahdoos, Residency Road", "dish": "Rogan josh + tabak maaz", "price": 350, "lat": 34.0836, "lng": 74.7995, "note": "Iconic Kashmiri wazwan since 1918"},
+            {"name": "Krishna Dhaba, Durga Nag", "dish": "Rajma chawal + kahwa", "price": 150, "lat": 34.0854, "lng": 74.8390, "note": "Locals-only, run by 3 generations"},
+            {"name": "Chai Jaai, Habba Kadal", "dish": "Nun chai + sheermal", "price": 80, "lat": 34.0997, "lng": 74.8103, "note": "Tiny corner shop near old city bridge"}
+        ]
+    },
+    {
+        "slug": "coorg",
+        "name": "Coorg",
+        "tagline": "Scotland of India — coffee mist & cardamom hills",
+        "region": "Western Ghats",
+        "state": "Karnataka",
+        "best_season": "Sep – Mar",
+        "budget_per_day": 1400,
+        "vibe": "Coffee brown, misty green, rainforest, cardamom",
+        "hero_image": "https://images.unsplash.com/photo-1626621341517-bbf3d9990a23?w=1600&q=85",
+        "coords": {"lat": 12.4244, "lng": 75.7382},
+        "highlights": ["Abbey Falls", "Raja's Seat sunset", "Dubare elephant camp", "Coffee plantation walk", "Talakaveri river origin"],
+        "stays": [
+            {"name": "Kaapi Cottage, Madikeri", "type": "Homestay", "price": 900, "note": "Inside a working coffee estate", "lat": 12.4204, "lng": 75.7397},
+            {"name": "Kabbe Hills Farm Stay", "type": "Farm Stay", "price": 1200, "note": "Kodava family, home-cooked pandi curry", "lat": 12.3419, "lng": 75.7833},
+            {"name": "Nisargadhama Bamboo Hut", "type": "Bamboo Hut", "price": 800, "note": "River-island, deer roam free", "lat": 12.2703, "lng": 75.9128}
+        ],
+        "food_spots": [
+            {"name": "Coorg Cuisine, Madikeri", "dish": "Pandi curry + akki roti", "price": 250, "lat": 12.4194, "lng": 75.7300, "note": "Family recipe, no tourist menu"},
+            {"name": "Anna's Bakery, KP Road", "dish": "Coorg coffee + banana chips", "price": 60, "lat": 12.4210, "lng": 75.7404, "note": "Chhoti dukaan, cash only, since 1971"},
+            {"name": "Raintree Cafe, Coorg", "dish": "Kadambuttu + mushroom curry", "price": 220, "lat": 12.4180, "lng": 75.7392, "note": "Rain-forest view balcony seating"}
+        ]
+    },
+    {
+        "slug": "andaman",
+        "name": "Andaman",
+        "tagline": "Turquoise silence — coral reefs & untouched beaches",
+        "region": "Islands",
+        "state": "Andaman & Nicobar",
+        "best_season": "Nov – May",
+        "budget_per_day": 2600,
+        "vibe": "Turquoise sea, coral pink, white sand, palm green",
+        "hero_image": "https://images.unsplash.com/photo-1544550581-5f7ceaf7f992?w=1600&q=85",
+        "coords": {"lat": 11.7401, "lng": 92.6586},
+        "highlights": ["Radhanagar Beach (Havelock)", "Cellular Jail light+sound show", "Scuba diving at Elephant Beach", "Ross Island ruins", "Neil Island Bharatpur Beach"],
+        "stays": [
+            {"name": "Emerald Gecko, Havelock", "type": "Beach Hut", "price": 1400, "note": "Bamboo huts, walk to Radhanagar", "lat": 11.9800, "lng": 92.9631},
+            {"name": "Pearl Park Beach Resort, Neil", "type": "Cottage", "price": 1600, "note": "Coconut grove, kayak rentals", "lat": 11.8322, "lng": 93.0428},
+            {"name": "Blue Bird Homestay, Port Blair", "type": "Homestay", "price": 1000, "note": "Bengali fishing family, fresh catch daily", "lat": 11.6234, "lng": 92.7265}
+        ],
+        "food_spots": [
+            {"name": "Full Moon Cafe, Havelock", "dish": "Grilled tuna + coconut rice", "price": 300, "lat": 11.9769, "lng": 92.9868, "note": "Beach shack, hammocks + reggae"},
+            {"name": "Annapurna, Aberdeen Bazaar", "dish": "Fish thali + tender coconut", "price": 180, "lat": 11.6690, "lng": 92.7454, "note": "Local Bengali kitchen, no menu"},
+            {"name": "Something Different Cafe, Neil", "dish": "Homemade pesto pasta + lassi", "price": 250, "lat": 11.8300, "lng": 93.0500, "note": "Israeli-Indian couple, live music Fri"}
+        ]
     }
 ]
 
@@ -577,6 +646,85 @@ async def create_review(body: ReviewCreate, user: User = Depends(get_current_use
     await db.reviews.insert_one(doc)
     doc.pop("_id", None)
     return {"review_id": doc["review_id"], "ok": True}
+
+
+# --- Community Stories (long-form blog) ---
+class StoryCreate(BaseModel):
+    destination_slug: str
+    title: str
+    cover_image: Optional[str] = None
+    content: str  # supports newline-separated paragraphs
+    tags: Optional[List[str]] = []
+
+
+@api_router.post("/stories")
+async def create_story(body: StoryCreate, user: User = Depends(get_current_user)):
+    if len(body.content.strip()) < 150:
+        raise HTTPException(status_code=400, detail="Story must be at least 150 characters — genuine only")
+    if len(body.title.strip()) < 6:
+        raise HTTPException(status_code=400, detail="Title too short")
+    dest = await db.destinations.find_one({"slug": body.destination_slug}, {"_id": 0})
+    if not dest:
+        raise HTTPException(status_code=404, detail="Destination not found")
+
+    doc = {
+        "story_id": f"story_{uuid.uuid4().hex[:12]}",
+        "destination_slug": body.destination_slug,
+        "destination_name": dest["name"],
+        "author_id": user.user_id,
+        "author_name": user.name,
+        "author_picture": user.picture,
+        "title": body.title.strip(),
+        "cover_image": body.cover_image or dest.get("hero_image"),
+        "content": body.content.strip(),
+        "tags": [t.strip().lower() for t in (body.tags or []) if t.strip()][:6],
+        "likes": 0,
+        "read_time_min": max(1, len(body.content.split()) // 200),
+        "created_at": datetime.now(timezone.utc).isoformat(),
+    }
+    await db.stories.insert_one(doc)
+    doc.pop("_id", None)
+    return doc
+
+
+@api_router.get("/stories")
+async def list_stories(destination_slug: Optional[str] = None, limit: int = 50):
+    q = {"destination_slug": destination_slug} if destination_slug else {}
+    docs = await db.stories.find(q, {"_id": 0}).sort("created_at", -1).to_list(limit)
+    # trim content in list view
+    for d in docs:
+        d["excerpt"] = d["content"][:220] + ("…" if len(d["content"]) > 220 else "")
+        d.pop("content", None)
+    return docs
+
+
+@api_router.get("/stories/{story_id}")
+async def get_story(story_id: str):
+    doc = await db.stories.find_one({"story_id": story_id}, {"_id": 0})
+    if not doc:
+        raise HTTPException(status_code=404, detail="Story not found")
+    return doc
+
+
+@api_router.post("/stories/{story_id}/like")
+async def like_story(story_id: str, user: User = Depends(get_current_user)):
+    existing = await db.story_likes.find_one({"story_id": story_id, "user_id": user.user_id})
+    if existing:
+        await db.story_likes.delete_one({"story_id": story_id, "user_id": user.user_id})
+        await db.stories.update_one({"story_id": story_id}, {"$inc": {"likes": -1}})
+        return {"liked": False}
+    await db.story_likes.insert_one({"story_id": story_id, "user_id": user.user_id, "ts": datetime.now(timezone.utc).isoformat()})
+    await db.stories.update_one({"story_id": story_id}, {"$inc": {"likes": 1}})
+    return {"liked": True}
+
+
+@api_router.get("/stories-mine")
+async def my_stories(user: User = Depends(get_current_user)):
+    docs = await db.stories.find({"author_id": user.user_id}, {"_id": 0}).sort("created_at", -1).to_list(50)
+    for d in docs:
+        d["excerpt"] = d["content"][:220] + ("…" if len(d["content"]) > 220 else "")
+        d.pop("content", None)
+    return docs
 
 
 # --- Seed endpoint (idempotent) ---

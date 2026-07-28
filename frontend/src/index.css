@@ -75,6 +75,27 @@
     --by-secondary: 90 63 100;
     --by-accent: 231 213 179;
 }
+[data-destination="kashmir"] {
+    --by-bg: 250 244 240;
+    --by-text: 46 20 20;
+    --by-primary: 176 58 46;
+    --by-secondary: 46 92 108;
+    --by-accent: 236 214 194;
+}
+[data-destination="coorg"] {
+    --by-bg: 242 238 230;
+    --by-text: 34 26 18;
+    --by-primary: 104 65 40;
+    --by-secondary: 82 118 76;
+    --by-accent: 214 201 179;
+}
+[data-destination="andaman"] {
+    --by-bg: 234 246 246;
+    --by-text: 12 40 44;
+    --by-primary: 15 132 149;
+    --by-secondary: 232 149 128;
+    --by-accent: 197 232 232;
+}
 
 html, body, #root {
     margin: 0;

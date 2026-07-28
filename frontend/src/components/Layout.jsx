@@ -24,6 +24,7 @@ export default function Layout({ children }) {
                     <nav className="hidden md:flex items-center gap-8 font-editorial text-lg">
                         <Link data-testid="nav-explore" to="/" className="hover:italic transition-all">Explore</Link>
                         <Link data-testid="nav-planner" to="/planner" className="hover:italic transition-all">Plan a Yatra</Link>
+                        <Link data-testid="nav-stories" to="/stories" className="hover:italic transition-all">Stories</Link>
                         {user && <Link data-testid="nav-mine" to="/mine" className="hover:italic transition-all">My Trips</Link>}
                     </nav>
                     <div className="flex items-center gap-3">

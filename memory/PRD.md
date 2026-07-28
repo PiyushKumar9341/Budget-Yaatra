@@ -39,6 +39,15 @@ An anti-commission, roots-connected Indian travel discovery platform. Genuine hi
 - [x] Full data-testid coverage
 - [x] Backend end-to-end tested 9/9 endpoints pass + manual verified AI planner (₹5800 real Gemini response), chat streaming, save/mine
 
+## Updated (28 Jul 2026 — Iteration 2)
+- [x] Added 3 new destinations with unique themes: **Kashmir** (chinar red + dal teal), **Coorg** (coffee brown + rainforest green), **Andaman** (turquoise sea + coral) — total now **11 destinations**
+- [x] Community Stories / Blog system:
+    - Backend: `POST /api/stories`, `GET /api/stories?destination_slug=`, `GET /api/stories/{id}`, `POST /api/stories/{id}/like`, `GET /api/stories-mine`
+    - Frontend pages: `/stories` (list + filter), `/stories/new` (editor, auth-gated), `/stories/:id` (detail with drop-cap magazine layout)
+    - Long-form content (150+ char min), read-time auto-calculated, likes, tags
+    - Stories preview strip added on destination detail pages
+    - Seeded 3 sample stories (Kashmir, Coorg, Andaman)
+
 ## Backlog / Future
 - **P1**: Community stories page (write-ups, not just reviews)
 - **P1**: Add more destinations (Kashmir, Coorg, Andaman, Kanyakumari) with unique themes
