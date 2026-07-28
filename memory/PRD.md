@@ -77,7 +77,26 @@ An anti-commission, roots-connected Indian travel discovery platform. Genuine hi
 - [x] **Verified via testing_agent: 15/15 backend tests pass** (auth-gated reveal 401/200, phone-key absence in all public responses, image URLs, rating/regression)
 - [x] Post-test code review fix applied: `/api/wishlist` was still leaking phones — now stripped
 
-## Backlog / Future
+## Iteration 6 — Domain choice, Professional Footer, Smoothness upgrade (28 Jul 2026)
+- [x] Brand renamed **Budget Yatra → Budget Yaatra** everywhere (matches Hindi transliteration "यात्रा", closer to authentic pronunciation; user's domain preference)
+- [x] Full editorial-magazine **Footer** built:
+    - 4-column grid: Brand + newsletter · Explore · Community · Follow along
+    - Giant "Yaatra" watermark at bottom (5% opacity)
+    - Newsletter form with paper-plane submit (client-side toast, backend hook TODO)
+    - 4 social icon placeholders (Instagram/Twitter/YouTube/LinkedIn) with hover lift + brand-color fill animation — user to replace `#` hrefs manually
+    - Email "Say Namaste" link (mailto:hello@budgetyaatra.in)
+    - Bottom bar with copyright + Privacy/Terms/Roots-pledge links
+- [x] **Smoothness upgrades**:
+    - Global `scroll-behavior: smooth`
+    - Custom subtle scrollbar
+    - `.link-underline` reveal animation for nav links (from-right → to-left slide-in on hover)
+    - Smoother card lift with box-shadow
+    - Cubic-bezier(0.16,1,0.3,1) easing on all pill buttons + cards
+    - Text selection now glows with brand color
+- [x] **Motion helpers**:
+    - `<ScrollProgress />` — thin gradient bar at top showing reading progress
+    - `<PageFade>` wrapping every route → 0.45s fade+lift transition on route change
+    - `useRevealOnScroll()` hook + `.reveal-up` CSS class for future scroll reveals
 - **P1**: Community stories page (write-ups, not just reviews)
 - **P1**: Add more destinations (Kashmir, Coorg, Andaman, Kanyakumari) with unique themes
 - **P2**: Public-facing itinerary sharing (unique share links)

@@ -2,6 +2,7 @@ import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { Mountain, Heart, User, LogOut } from "lucide-react";
+import Footer from "@/components/Footer";
 
 export default function Layout({ children }) {
     const { user, logout } = useAuth();
@@ -18,14 +19,14 @@ export default function Layout({ children }) {
             <header className="glass sticky top-0 z-40">
                 <div className="max-w-[1400px] mx-auto px-6 md:px-10 py-4 flex items-center justify-between">
                     <Link to="/" data-testid="logo-link" className="flex items-center gap-2 group">
-                        <Mountain className="w-6 h-6" style={{ color: "rgb(var(--by-primary))" }} />
-                        <span className="font-display text-2xl tracking-tighter">Budget Yatra</span>
+                        <Mountain className="w-6 h-6 transition-transform duration-500 group-hover:-translate-y-1" style={{ color: "rgb(var(--by-primary))" }} />
+                        <span className="font-display text-2xl tracking-tighter">Budget Yaatra</span>
                     </Link>
                     <nav className="hidden md:flex items-center gap-8 font-editorial text-lg">
-                        <Link data-testid="nav-explore" to="/" className="hover:italic transition-all">Explore</Link>
-                        <Link data-testid="nav-planner" to="/planner" className="hover:italic transition-all">Plan a Yatra</Link>
-                        <Link data-testid="nav-stories" to="/stories" className="hover:italic transition-all">Stories</Link>
-                        {user && <Link data-testid="nav-mine" to="/mine" className="hover:italic transition-all">My Trips</Link>}
+                        <Link data-testid="nav-explore" to="/" className="link-underline">Explore</Link>
+                        <Link data-testid="nav-planner" to="/planner" className="link-underline">Plan a Yatra</Link>
+                        <Link data-testid="nav-stories" to="/stories" className="link-underline">Stories</Link>
+                        {user && <Link data-testid="nav-mine" to="/mine" className="link-underline">My Trips</Link>}
                     </nav>
                     <div className="flex items-center gap-3">
                         {user ? (
@@ -55,12 +56,7 @@ export default function Layout({ children }) {
                 </div>
             </header>
             <main>{children}</main>
-            <footer className="mt-24 border-t border-black/5">
-                <div className="max-w-[1400px] mx-auto px-6 md:px-10 py-10 flex flex-col md:flex-row items-center justify-between gap-4">
-                    <p className="font-editorial-italic text-lg">Roots. Not routes.</p>
-                    <p className="text-sm opacity-60">Made with chai in India · Budget Yatra © 2026</p>
-                </div>
-            </footer>
+            <Footer />
         </div>
     );
 }
