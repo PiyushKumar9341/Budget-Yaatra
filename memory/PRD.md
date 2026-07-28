@@ -65,6 +65,18 @@ An anti-commission, roots-connected Indian travel discovery platform. Genuine hi
     - Aggregate rating badge (⭐ avg + count) shown top-right on every partner card
     - Recent reviews rendered inline at bottom of card (last 2)
 
+## Bug fix + Business flaw fix (28 Jul 2026 — Iteration 5)
+- [x] Fixed 2 broken hero images: **Sikkim** (turquoise alpine lake) + **Tawang** (snow peak with clouds) now render via Pexels URLs (verified HTTP 200)
+- [x] **CRITICAL business fix** — partner phone numbers are now HIDDEN by default from all public destination responses (`_strip_contact()` scrubs them from `GET /destinations`, `GET /destinations/{slug}`, AND `GET /wishlist`)
+- [x] New auth-gated reveal flow:
+    - `POST /api/partners/reveal` requires Google login, returns phone + logs to `partner_reveals` collection (user_id, timestamp)
+    - `GET /api/partners/reveal-count/{slug}` — public aggregate showing how many yatris contacted each partner (future social-proof "N yatris contacted this week" chip)
+    - UI: Card shows "🔒 Contact hidden · sign in to reveal" until revealed; button reads "Reveal & Book on WhatsApp"
+- [x] Prevents users from bypassing the platform (fixes the "why would guides use my website" concern)
+- [x] Creates monetization + retention leverage: platform now has data on which partners are getting real interest — foundation for a future "Featured Yatri Partner" paid subscription
+- [x] **Verified via testing_agent: 15/15 backend tests pass** (auth-gated reveal 401/200, phone-key absence in all public responses, image URLs, rating/regression)
+- [x] Post-test code review fix applied: `/api/wishlist` was still leaking phones — now stripped
+
 ## Backlog / Future
 - **P1**: Community stories page (write-ups, not just reviews)
 - **P1**: Add more destinations (Kashmir, Coorg, Andaman, Kanyakumari) with unique themes

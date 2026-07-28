@@ -747,6 +747,8 @@ async def get_wishlist(user: User = Depends(get_current_user)):
     if not slugs:
         return []
     dests = await db.destinations.find({"slug": {"$in": slugs}}, {"_id": 0}).to_list(100)
+    for d in dests:
+        _strip_contact(d)
     return dests
 
 
