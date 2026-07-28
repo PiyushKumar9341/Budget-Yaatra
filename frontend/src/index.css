@@ -2,114 +2,235 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
+/* Fontshare fonts - Cabinet Grotesk, Cormorant Garamond, Satoshi */
+@import url('https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@800,900&f[]=satoshi@400,500,700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap');
+
+/* Leaflet */
+@import url('https://unpkg.com/leaflet@1.9.4/dist/leaflet.css');
+
+:root {
+    --by-bg: 249 247 243;         /* #F9F7F3 */
+    --by-text: 26 26 26;           /* #1A1A1A */
+    --by-primary: 217 119 87;      /* #D97757 */
+    --by-secondary: 44 64 53;      /* #2C4035 */
+    --by-accent: 228 197 175;      /* #E4C5AF */
+    --by-muted: 156 146 132;
+}
+
+/* Destination-specific themes triggered by [data-destination] on root */
+[data-destination="meghalaya"] {
+    --by-bg: 237 242 238;
+    --by-text: 19 42 31;
+    --by-primary: 54 123 84;
+    --by-secondary: 163 188 167;
+    --by-accent: 196 223 210;
+}
+[data-destination="ladakh"] {
+    --by-bg: 243 239 233;
+    --by-text: 31 27 24;
+    --by-primary: 39 79 117;
+    --by-secondary: 212 163 115;
+    --by-accent: 143 159 163;
+}
+[data-destination="rishikesh"] {
+    --by-bg: 253 249 241;
+    --by-text: 44 27 17;
+    --by-primary: 223 108 50;
+    --by-secondary: 49 116 125;
+    --by-accent: 245 227 209;
+}
+[data-destination="manali"] {
+    --by-bg: 244 246 247;
+    --by-text: 17 24 32;
+    --by-primary: 32 70 57;
+    --by-secondary: 141 110 82;
+    --by-accent: 209 221 226;
+}
+[data-destination="spiti"] {
+    --by-bg: 232 230 225;
+    --by-text: 31 29 26;
+    --by-primary: 107 90 75;
+    --by-secondary: 138 158 167;
+    --by-accent: 209 201 190;
+}
+[data-destination="sikkim"] {
+    --by-bg: 240 244 238;
+    --by-text: 21 35 24;
+    --by-primary: 58 125 68;
+    --by-secondary: 200 130 148;
+    --by-accent: 224 232 220;
+}
+[data-destination="kasol"] {
+    --by-bg: 240 244 245;
+    --by-text: 18 30 34;
+    --by-primary: 46 106 128;
+    --by-secondary: 128 160 118;
+    --by-accent: 210 226 226;
+}
+[data-destination="tawang"] {
+    --by-bg: 246 240 230;
+    --by-text: 40 24 12;
+    --by-primary: 178 108 39;
+    --by-secondary: 90 63 100;
+    --by-accent: 231 213 179;
+}
+
+html, body, #root {
     margin: 0;
-    font-family:
-        -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
-        "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
-        sans-serif;
+    padding: 0;
+    background: rgb(var(--by-bg));
+    color: rgb(var(--by-text));
+    font-family: 'Satoshi', system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+    transition: background-color 700ms ease, color 700ms ease;
+    min-height: 100vh;
 }
 
-code {
-    font-family:
-        source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
+::selection {
+    background: rgb(var(--by-primary));
+    color: rgb(var(--by-bg));
 }
 
-@layer base {
-    :root {
-        --background: 0 0% 100%;
-        --foreground: 0 0% 3.9%;
-        --card: 0 0% 100%;
-        --card-foreground: 0 0% 3.9%;
-        --popover: 0 0% 100%;
-        --popover-foreground: 0 0% 3.9%;
-        --primary: 0 0% 9%;
-        --primary-foreground: 0 0% 98%;
-        --secondary: 0 0% 96.1%;
-        --secondary-foreground: 0 0% 9%;
-        --muted: 0 0% 96.1%;
-        --muted-foreground: 0 0% 45.1%;
-        --accent: 0 0% 96.1%;
-        --accent-foreground: 0 0% 9%;
-        --destructive: 0 84.2% 60.2%;
-        --destructive-foreground: 0 0% 98%;
-        --border: 0 0% 89.8%;
-        --input: 0 0% 89.8%;
-        --ring: 0 0% 3.9%;
-        --chart-1: 12 76% 61%;
-        --chart-2: 173 58% 39%;
-        --chart-3: 197 37% 24%;
-        --chart-4: 43 74% 66%;
-        --chart-5: 27 87% 67%;
-        --radius: 0.5rem;
-    }
-    .dark {
-        --background: 0 0% 3.9%;
-        --foreground: 0 0% 98%;
-        --card: 0 0% 3.9%;
-        --card-foreground: 0 0% 98%;
-        --popover: 0 0% 3.9%;
-        --popover-foreground: 0 0% 98%;
-        --primary: 0 0% 98%;
-        --primary-foreground: 0 0% 9%;
-        --secondary: 0 0% 14.9%;
-        --secondary-foreground: 0 0% 98%;
-        --muted: 0 0% 14.9%;
-        --muted-foreground: 0 0% 63.9%;
-        --accent: 0 0% 14.9%;
-        --accent-foreground: 0 0% 98%;
-        --destructive: 0 62.8% 30.6%;
-        --destructive-foreground: 0 0% 98%;
-        --border: 0 0% 14.9%;
-        --input: 0 0% 14.9%;
-        --ring: 0 0% 83.1%;
-        --chart-1: 220 70% 50%;
-        --chart-2: 160 60% 45%;
-        --chart-3: 30 80% 55%;
-        --chart-4: 280 65% 60%;
-        --chart-5: 340 75% 55%;
-    }
+.font-display {
+    font-family: 'Cabinet Grotesk', sans-serif;
+    letter-spacing: -0.03em;
+    font-weight: 900;
+}
+.font-editorial {
+    font-family: 'Cormorant Garamond', serif;
+}
+.font-editorial-italic {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
 }
 
-@layer base {
-    * {
-        @apply border-border;
-    }
-    body {
-        @apply bg-background text-foreground;
-    }
+/* subtle grain overlay */
+.grain::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 100;
+    opacity: 0.05;
+    mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
-@layer base {
-    [data-debug-wrapper="true"] {
-        display: contents !important;
-    }
+/* Marquee ribbon */
+@keyframes marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+}
+.marquee-track {
+    display: flex;
+    width: max-content;
+    animation: marquee 35s linear infinite;
+}
 
-    [data-debug-wrapper="true"] > * {
-        margin-left: inherit;
-        margin-right: inherit;
-        margin-top: inherit;
-        margin-bottom: inherit;
-        padding-left: inherit;
-        padding-right: inherit;
-        padding-top: inherit;
-        padding-bottom: inherit;
-        column-gap: inherit;
-        row-gap: inherit;
-        gap: inherit;
-        border-left-width: inherit;
-        border-right-width: inherit;
-        border-top-width: inherit;
-        border-bottom-width: inherit;
-        border-left-style: inherit;
-        border-right-style: inherit;
-        border-top-style: inherit;
-        border-bottom-style: inherit;
-        border-left-color: inherit;
-        border-right-color: inherit;
-        border-top-color: inherit;
-        border-bottom-color: inherit;
-    }
+/* Pill button */
+.pill-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.85rem 1.75rem;
+    border-radius: 9999px;
+    background: rgb(var(--by-primary));
+    color: rgb(var(--by-bg));
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+    border: 1px solid rgb(var(--by-primary));
+    cursor: pointer;
+}
+.pill-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 30px -12px rgba(0, 0, 0, 0.25);
+}
+.pill-btn.ghost {
+    background: transparent;
+    color: rgb(var(--by-text));
+    border-color: rgb(var(--by-text) / 0.25);
+}
+.pill-btn.ghost:hover {
+    background: rgb(var(--by-text) / 0.05);
+}
+
+/* Card */
+.by-card {
+    background: rgb(var(--by-bg));
+    border: 1px solid rgb(var(--by-text) / 0.08);
+    border-radius: 20px;
+    padding: 1.5rem;
+    transition: transform 0.3s ease, border-color 0.3s ease;
+}
+.by-card:hover {
+    border-color: rgb(var(--by-primary) / 0.5);
+    transform: translateY(-3px);
+}
+
+/* Input */
+.by-input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-bottom: 1.5px solid rgb(var(--by-text) / 0.25);
+    padding: 0.85rem 0.25rem;
+    font-family: 'Satoshi', sans-serif;
+    font-size: 1rem;
+    color: rgb(var(--by-text));
+    outline: none;
+    transition: border-color 0.3s ease;
+}
+.by-input:focus {
+    border-color: rgb(var(--by-primary));
+}
+.by-input::placeholder { color: rgb(var(--by-text) / 0.4); }
+
+/* Glass header */
+.glass {
+    background: rgb(var(--by-bg) / 0.72);
+    backdrop-filter: blur(18px) saturate(140%);
+    -webkit-backdrop-filter: blur(18px) saturate(140%);
+    border-bottom: 1px solid rgb(var(--by-text) / 0.06);
+}
+
+/* hero text shadow */
+.text-shadow-soft { text-shadow: 0 2px 20px rgba(0,0,0,0.35); }
+
+/* Leaflet map styling */
+.leaflet-container {
+    background: rgb(var(--by-bg));
+    border-radius: 20px;
+    font-family: 'Satoshi', sans-serif !important;
+}
+.leaflet-popup-content-wrapper {
+    border-radius: 12px !important;
+    background: rgb(var(--by-bg)) !important;
+    color: rgb(var(--by-text)) !important;
+}
+.leaflet-popup-tip { background: rgb(var(--by-bg)) !important; }
+
+/* Chat bubbles */
+.chat-bubble-ai {
+    background: rgb(var(--by-accent) / 0.5);
+    color: rgb(var(--by-text));
+    border-radius: 16px 16px 16px 4px;
+    padding: 0.85rem 1.1rem;
+    max-width: 85%;
+    font-family: 'Satoshi', sans-serif;
+}
+.chat-bubble-user {
+    background: transparent;
+    color: rgb(var(--by-text));
+    border: 1px solid rgb(var(--by-text) / 0.15);
+    border-radius: 16px 16px 4px 16px;
+    padding: 0.85rem 1.1rem;
+    max-width: 85%;
+    margin-left: auto;
+}
+
+/* respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
 }
