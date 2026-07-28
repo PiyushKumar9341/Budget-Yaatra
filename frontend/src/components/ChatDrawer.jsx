@@ -63,7 +63,9 @@ export default function ChatDrawer({ open, onClose, destSlug, destName }) {
                                 return copy;
                             });
                         }
-                    } catch {}
+                    } catch (err) {
+                        console.warn("[ChatDrawer] SSE chunk parse failed:", err?.message || err);
+                    }
                 }
             }
         } catch (e) {

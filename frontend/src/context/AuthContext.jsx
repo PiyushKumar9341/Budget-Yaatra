@@ -12,7 +12,11 @@ export function AuthProvider({ children }) {
         try {
             const res = await axios.get(`${API}/auth/me`, { withCredentials: true });
             setUser(res.data);
-        } catch {
+        } catch (err) {
+            // 401 is expected when not signed in — don't spam the console
+            if (err?.response?.status && err.response.status !== 401) {
+                console.warn("[AuthContext] /auth/me failed:", err?.message || err);
+            }
             setUser(null);
         } finally {
             setLoading(false);

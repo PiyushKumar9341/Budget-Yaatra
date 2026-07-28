@@ -374,7 +374,9 @@ DESTINATIONS_SEED = [
 # (mock but realistic; used for WhatsApp deep-links)
 import hashlib as _hashlib
 def _mock_phone(name: str) -> str:
-    h = _hashlib.md5(name.encode()).hexdigest()
+    # SHA-256 for deterministic partner phone generation (not security-critical,
+    # just avoids MD5 in the codebase per code review)
+    h = _hashlib.sha256(name.encode()).hexdigest()
     n = int(h[:10], 16)
     start_digit = ((n >> 4) % 4) + 6  # 6-9
     rest = str(n % 1000000000).zfill(9)[:9]
@@ -551,6 +553,7 @@ Return ONLY this exact JSON schema:
         system_message=system_msg,
     ).with_model("gemini", "gemini-3-flash-preview")
 
+    plan = None
     try:
         resp = await chat.send_message(UserMessage(text=user_prompt))
         text = resp if isinstance(resp, str) else str(resp)
@@ -565,6 +568,9 @@ Return ONLY this exact JSON schema:
     except Exception as e:
         logging.exception("plan_trip failed")
         raise HTTPException(status_code=500, detail=f"AI planner failed: {e}")
+
+    if not plan:
+        raise HTTPException(status_code=500, detail="AI planner returned empty response")
 
     plan["destination"] = {"slug": dest["slug"], "name": dest["name"], "hero_image": dest["hero_image"]}
     plan["plan_id"] = f"plan_{uuid.uuid4().hex[:10]}"
