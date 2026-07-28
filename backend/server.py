@@ -370,6 +370,21 @@ DESTINATIONS_SEED = [
     }
 ]
 
+# Deterministically inject Indian-format phone numbers into every rental + guide entry
+# (mock but realistic; used for WhatsApp deep-links)
+import hashlib as _hashlib
+def _mock_phone(name: str) -> str:
+    h = _hashlib.md5(name.encode()).hexdigest()
+    n = int(h[:10], 16)
+    start_digit = ((n >> 4) % 4) + 6  # 6-9
+    rest = str(n % 1000000000).zfill(9)[:9]
+    return f"+91 {start_digit}{rest[:4]} {rest[4:]}"
+
+for _d in DESTINATIONS_SEED:
+    for _item in _d.get("rentals", []) + _d.get("guides", []):
+        if "phone" not in _item:
+            _item["phone"] = _mock_phone(_d["slug"] + _item["name"])
+
 # ============ MODELS ============
 class Destination(BaseModel):
     slug: str
@@ -819,6 +834,56 @@ async def my_stories(user: User = Depends(get_current_user)):
         d["excerpt"] = d["content"][:220] + ("…" if len(d["content"]) > 220 else "")
         d.pop("content", None)
     return docs
+
+
+# --- Partner Ratings (rentals + guides) ---
+class PartnerRating(BaseModel):
+    destination_slug: str
+    partner_type: str  # "rental" or "guide"
+    partner_name: str
+    rating: int = Field(ge=1, le=5)
+    comment: Optional[str] = ""
+
+
+@api_router.post("/partners/rate")
+async def rate_partner(body: PartnerRating, user: User = Depends(get_current_user)):
+    if body.partner_type not in ("rental", "guide"):
+        raise HTTPException(status_code=400, detail="partner_type must be rental|guide")
+    # upsert one rating per (user, partner) so ratings stay honest
+    doc = {
+        "destination_slug": body.destination_slug,
+        "partner_type": body.partner_type,
+        "partner_name": body.partner_name,
+        "user_id": user.user_id,
+        "user_name": user.name,
+        "user_picture": user.picture,
+        "rating": body.rating,
+        "comment": (body.comment or "").strip(),
+        "updated_at": datetime.now(timezone.utc).isoformat(),
+    }
+    await db.partner_ratings.update_one(
+        {"destination_slug": body.destination_slug, "partner_name": body.partner_name, "user_id": user.user_id},
+        {"$set": doc, "$setOnInsert": {"created_at": doc["updated_at"]}},
+        upsert=True,
+    )
+    return {"ok": True}
+
+
+@api_router.get("/destinations/{slug}/partner-ratings")
+async def partner_ratings(slug: str):
+    docs = await db.partner_ratings.find({"destination_slug": slug}, {"_id": 0}).to_list(500)
+    agg = {}
+    for d in docs:
+        key = d["partner_name"]
+        agg.setdefault(key, {"avg": 0, "count": 0, "sum": 0, "recent": []})
+        agg[key]["sum"] += d["rating"]
+        agg[key]["count"] += 1
+        agg[key]["recent"].append({"user_name": d["user_name"], "rating": d["rating"], "comment": d["comment"], "user_picture": d.get("user_picture")})
+    for k, v in agg.items():
+        v["avg"] = round(v["sum"] / v["count"], 1)
+        v.pop("sum", None)
+        v["recent"] = v["recent"][-5:]  # last 5 only
+    return agg
 
 
 # --- Seed endpoint (idempotent) ---

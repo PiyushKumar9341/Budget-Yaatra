@@ -56,6 +56,15 @@ An anti-commission, roots-connected Indian travel discovery platform. Genuine hi
     - Map now shows 4 pin colors: theme-color (stays), dark (food), orange (rentals), purple (guides)
     - New sections rendered between "food" and "map" on `/destination/:slug`
 
+## Updated (28 Jul 2026 — Iteration 4)
+- [x] **Phone numbers** auto-injected into every rental + guide (deterministic Indian-format mock numbers via MD5 hash)
+- [x] **Book on WhatsApp** button on every partner card — deep-links to `wa.me/<phone>` with pre-filled Hinglish message including destination and vehicle/specialty context
+- [x] **Partner Rating system**:
+    - Backend: `POST /api/partners/rate` (auth, upserts one rating per user+partner), `GET /api/destinations/{slug}/partner-ratings` (returns aggregated avg + count + recent 5 reviews per partner)
+    - Frontend: Rate button opens `PartnerRateModal` (5-star + optional comment)
+    - Aggregate rating badge (⭐ avg + count) shown top-right on every partner card
+    - Recent reviews rendered inline at bottom of card (last 2)
+
 ## Backlog / Future
 - **P1**: Community stories page (write-ups, not just reviews)
 - **P1**: Add more destinations (Kashmir, Coorg, Andaman, Kanyakumari) with unique themes

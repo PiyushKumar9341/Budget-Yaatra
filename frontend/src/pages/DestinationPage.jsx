@@ -6,9 +6,10 @@ import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import L from "leaflet";
 import { useTheme } from "@/context/ThemeContext";
 import { useAuth } from "@/context/AuthContext";
-import { Heart, MessageCircle, MapPin, Utensils, BedDouble, Star, Calendar, Wallet, Bike, UserRound } from "lucide-react";
+import { Heart, MessageCircle, MapPin, Utensils, BedDouble, Star, Calendar, Wallet, Bike, UserRound, Phone } from "lucide-react";
 import ChatDrawer from "@/components/ChatDrawer";
 import ReviewForm from "@/components/ReviewForm";
+import PartnerRateModal from "@/components/PartnerRateModal";
 import { toast } from "sonner";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
@@ -30,12 +31,19 @@ export default function DestinationPage() {
     const [stories, setStories] = useState([]);
     const [chatOpen, setChatOpen] = useState(false);
     const [inWishlist, setInWishlist] = useState(false);
+    const [partnerRatings, setPartnerRatings] = useState({});
+    const [rateTarget, setRateTarget] = useState(null); // {type, name}
+
+    const fetchRatings = () => {
+        axios.get(`${API}/destinations/${slug}/partner-ratings`).then((r) => setPartnerRatings(r.data)).catch(() => {});
+    };
 
     useEffect(() => {
         setDestination(slug);
         axios.get(`${API}/destinations/${slug}`).then((r) => setDest(r.data)).catch(() => {});
         axios.get(`${API}/destinations/${slug}/reviews`).then((r) => setReviews(r.data)).catch(() => {});
         axios.get(`${API}/stories?destination_slug=${slug}`).then((r) => setStories(r.data.slice(0, 3))).catch(() => {});
+        fetchRatings();
         return () => setDestination("base");
     }, [slug, setDestination]);
 
@@ -164,15 +172,21 @@ export default function DestinationPage() {
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-5" data-testid="rentals-grid">
                         {dest.rentals.map((r, i) => (
-                            <div key={i} className="by-card">
-                                <div className="flex items-center gap-2 text-xs uppercase tracking-widest opacity-60 mb-3">
-                                    <Bike className="w-4 h-4" /> {r.type}
-                                </div>
-                                <h3 className="font-display text-2xl tracking-tight">{r.name}</h3>
-                                <p className="font-editorial mt-2 text-lg">{r.vehicle}</p>
-                                <p className="font-editorial-italic mt-2 opacity-70 text-sm">{r.note}</p>
-                                <p className="mt-4 text-sm"><span className="font-display text-xl">₹{r.price_per_day}</span><span className="opacity-60"> /day</span></p>
-                            </div>
+                            <PartnerCard
+                                key={i}
+                                partner={r}
+                                type="rental"
+                                icon={Bike}
+                                iconLabel={r.type}
+                                titleField="name"
+                                subtitleField="vehicle"
+                                priceField="price_per_day"
+                                destName={dest.name}
+                                slug={slug}
+                                userAvailable={!!user}
+                                rating={partnerRatings[r.name]}
+                                onRate={() => setRateTarget({ type: "rental", name: r.name })}
+                            />
                         ))}
                     </div>
                 </section>
@@ -190,18 +204,22 @@ export default function DestinationPage() {
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-5" data-testid="guides-grid">
                         {dest.guides.map((g, i) => (
-                            <div key={i} className="by-card">
-                                <div className="flex items-center gap-2 text-xs uppercase tracking-widest opacity-60 mb-3">
-                                    <UserRound className="w-4 h-4" /> Local guide
-                                </div>
-                                <h3 className="font-display text-2xl tracking-tight">{g.name}</h3>
-                                <p className="font-editorial mt-2 text-lg">{g.specialty}</p>
-                                <p className="font-editorial-italic mt-2 opacity-70 text-sm">{g.note}</p>
-                                <div className="mt-4 flex items-center justify-between text-sm">
-                                    <span className="opacity-70">Speaks: {g.languages}</span>
-                                    <span><span className="font-display text-xl">₹{g.price_per_day}</span><span className="opacity-60"> /day</span></span>
-                                </div>
-                            </div>
+                            <PartnerCard
+                                key={i}
+                                partner={g}
+                                type="guide"
+                                icon={UserRound}
+                                iconLabel="Local guide"
+                                titleField="name"
+                                subtitleField="specialty"
+                                priceField="price_per_day"
+                                extraInfo={`Speaks: ${g.languages}`}
+                                destName={dest.name}
+                                slug={slug}
+                                userAvailable={!!user}
+                                rating={partnerRatings[g.name]}
+                                onRate={() => setRateTarget({ type: "guide", name: g.name })}
+                            />
                         ))}
                     </div>
                 </section>
@@ -319,6 +337,97 @@ export default function DestinationPage() {
             </section>
 
             <ChatDrawer open={chatOpen} onClose={() => setChatOpen(false)} destSlug={slug} destName={dest.name} />
+            {rateTarget && (
+                <PartnerRateModal
+                    open={!!rateTarget}
+                    onClose={() => setRateTarget(null)}
+                    destinationSlug={slug}
+                    partnerType={rateTarget.type}
+                    partnerName={rateTarget.name}
+                    onSaved={fetchRatings}
+                />
+            )}
+        </div>
+    );
+}
+
+function PartnerCard({ partner, type, icon: Icon, iconLabel, subtitleField, priceField, extraInfo, destName, slug, userAvailable, rating, onRate }) {
+    const openWA = () => {
+        const digits = (partner.phone || "").replace(/[^0-9]/g, "");
+        const text = encodeURIComponent(
+            `Namaste! I found you on Budget Yatra (budgetyatra.in) — planning a trip to ${destName}. Interested in your ${type === "rental" ? partner.vehicle : partner.specialty}. Available in the coming days?`
+        );
+        window.open(`https://wa.me/${digits}?text=${text}`, "_blank");
+    };
+    const rgb = getComputedStyle(document.documentElement).getPropertyValue("--by-primary").trim();
+    return (
+        <div className="by-card" data-testid={`partner-card-${type}-${partner.name.replace(/\s+/g, "-").toLowerCase().slice(0, 20)}`}>
+            <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2 text-xs uppercase tracking-widest opacity-60">
+                    <Icon className="w-4 h-4" /> {iconLabel}
+                </div>
+                {rating && (
+                    <div className="flex items-center gap-1 text-xs" title={`${rating.count} ratings`}>
+                        <Star className="w-3.5 h-3.5 fill-current" style={{ color: `rgb(${rgb})` }} />
+                        <span className="font-display">{rating.avg}</span>
+                        <span className="opacity-60">({rating.count})</span>
+                    </div>
+                )}
+            </div>
+            <h3 className="font-display text-2xl tracking-tight">{partner.name}</h3>
+            <p className="font-editorial mt-2 text-lg">{partner[subtitleField]}</p>
+            <p className="font-editorial-italic mt-2 opacity-70 text-sm">{partner.note}</p>
+
+            {partner.phone && (
+                <div className="mt-3 flex items-center gap-2 text-sm opacity-70">
+                    <Phone className="w-3.5 h-3.5" /> {partner.phone}
+                </div>
+            )}
+
+            <div className="mt-4 flex items-center justify-between text-sm">
+                <span>{extraInfo}</span>
+                <span><span className="font-display text-xl">₹{partner[priceField]}</span><span className="opacity-60"> /day</span></span>
+            </div>
+
+            <div className="mt-5 flex gap-2">
+                <button
+                    onClick={openWA}
+                    disabled={!partner.phone}
+                    data-testid={`wa-book-${type}`}
+                    className="pill-btn py-2 px-4 text-sm flex-1 justify-center"
+                    style={{ background: "#25D366", borderColor: "#25D366", color: "white" }}
+                >
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20.52 3.48A11.85 11.85 0 0012.06 0C5.5 0 .17 5.32.17 11.87c0 2.09.55 4.13 1.6 5.93L0 24l6.35-1.66a11.87 11.87 0 005.71 1.45h.01c6.55 0 11.88-5.32 11.88-11.87 0-3.17-1.23-6.15-3.43-8.44zM12.06 21.79h-.01a9.9 9.9 0 01-5.05-1.38l-.36-.22-3.77.99 1-3.67-.23-.38a9.86 9.86 0 01-1.52-5.26c0-5.45 4.43-9.88 9.88-9.88 2.64 0 5.12 1.03 6.99 2.9a9.79 9.79 0 012.9 6.99c0 5.45-4.43 9.87-9.83 9.87z"/></svg>
+                    Book on WhatsApp
+                </button>
+                <button
+                    onClick={() => {
+                        if (!userAvailable) { toast.error("Sign in to rate partners"); return; }
+                        onRate();
+                    }}
+                    data-testid={`rate-${type}`}
+                    className="pill-btn ghost py-2 px-4 text-sm"
+                >
+                    <Star className="w-3.5 h-3.5" /> Rate
+                </button>
+            </div>
+
+            {rating?.recent?.length > 0 && (
+                <div className="mt-4 pt-4 border-t space-y-2 text-xs" style={{ borderColor: "rgb(var(--by-text) / 0.08)" }}>
+                    {rating.recent.slice(-2).map((r, i) => (
+                        <div key={i} className="flex items-start gap-2">
+                            {r.user_picture && <img src={r.user_picture} alt="" className="w-5 h-5 rounded-full mt-0.5" />}
+                            <div className="flex-1">
+                                <div className="flex items-center gap-1 opacity-70">
+                                    <span className="font-medium">{r.user_name}</span>
+                                    <span>· {r.rating}★</span>
+                                </div>
+                                {r.comment && <p className="font-editorial-italic opacity-80">{r.comment}</p>}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            )}
         </div>
     );
 }
