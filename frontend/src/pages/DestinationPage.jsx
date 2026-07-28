@@ -352,13 +352,30 @@ export default function DestinationPage() {
 }
 
 function PartnerCard({ partner, type, icon: Icon, iconLabel, subtitleField, priceField, extraInfo, destName, slug, userAvailable, rating, onRate }) {
-    const openWA = () => {
-        const digits = (partner.phone || "").replace(/[^0-9]/g, "");
-        const text = encodeURIComponent(
-            `Namaste! I found you on Budget Yatra (budgetyatra.in) — planning a trip to ${destName}. Interested in your ${type === "rental" ? partner.vehicle : partner.specialty}. Available in the coming days?`
-        );
-        window.open(`https://wa.me/${digits}?text=${text}`, "_blank");
+    const [revealed, setRevealed] = useState(null); // {phone, name}
+    const [revealing, setRevealing] = useState(false);
+
+    const revealAndOpenWA = async () => {
+        if (!userAvailable) { toast.error("Sign in with Google to contact local partners"); return; }
+        if (revealing) return;
+        setRevealing(true);
+        try {
+            const r = await axios.post(`${API}/partners/reveal`, {
+                destination_slug: slug,
+                partner_type: type,
+                partner_name: partner.name,
+            }, { withCredentials: true });
+            setRevealed(r.data);
+            const digits = (r.data.phone || "").replace(/[^0-9]/g, "");
+            const text = encodeURIComponent(
+                `Namaste! I found you on Budget Yatra (budgetyatra.in) — planning a trip to ${destName}. Interested in your ${type === "rental" ? partner.vehicle : partner.specialty}. Available in the coming days?`
+            );
+            window.open(`https://wa.me/${digits}?text=${text}`, "_blank");
+        } catch (e) {
+            toast.error("Could not reveal contact. Try again.");
+        } finally { setRevealing(false); }
     };
+
     const rgb = getComputedStyle(document.documentElement).getPropertyValue("--by-primary").trim();
     return (
         <div className="by-card" data-testid={`partner-card-${type}-${partner.name.replace(/\s+/g, "-").toLowerCase().slice(0, 20)}`}>
@@ -378,9 +395,17 @@ function PartnerCard({ partner, type, icon: Icon, iconLabel, subtitleField, pric
             <p className="font-editorial mt-2 text-lg">{partner[subtitleField]}</p>
             <p className="font-editorial-italic mt-2 opacity-70 text-sm">{partner.note}</p>
 
-            {partner.phone && (
-                <div className="mt-3 flex items-center gap-2 text-sm opacity-70">
-                    <Phone className="w-3.5 h-3.5" /> {partner.phone}
+            {/* contact — hidden until revealed via auth-gated endpoint */}
+            {revealed?.phone ? (
+                <div className="mt-3 flex items-center gap-2 text-sm">
+                    <Phone className="w-3.5 h-3.5" style={{ color: `rgb(${rgb})` }} />
+                    <span className="font-display">{revealed.phone}</span>
+                    <span className="text-xs opacity-60 font-editorial-italic">· revealed</span>
+                </div>
+            ) : (
+                <div className="mt-3 flex items-center gap-2 text-sm opacity-60">
+                    <Phone className="w-3.5 h-3.5" />
+                    <span className="font-editorial-italic">Contact hidden · sign in to reveal</span>
                 </div>
             )}
 
@@ -391,14 +416,14 @@ function PartnerCard({ partner, type, icon: Icon, iconLabel, subtitleField, pric
 
             <div className="mt-5 flex gap-2">
                 <button
-                    onClick={openWA}
-                    disabled={!partner.phone}
+                    onClick={revealAndOpenWA}
+                    disabled={revealing}
                     data-testid={`wa-book-${type}`}
-                    className="pill-btn py-2 px-4 text-sm flex-1 justify-center"
+                    className="pill-btn py-2 px-4 text-sm flex-1 justify-center disabled:opacity-60"
                     style={{ background: "#25D366", borderColor: "#25D366", color: "white" }}
                 >
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20.52 3.48A11.85 11.85 0 0012.06 0C5.5 0 .17 5.32.17 11.87c0 2.09.55 4.13 1.6 5.93L0 24l6.35-1.66a11.87 11.87 0 005.71 1.45h.01c6.55 0 11.88-5.32 11.88-11.87 0-3.17-1.23-6.15-3.43-8.44zM12.06 21.79h-.01a9.9 9.9 0 01-5.05-1.38l-.36-.22-3.77.99 1-3.67-.23-.38a9.86 9.86 0 01-1.52-5.26c0-5.45 4.43-9.88 9.88-9.88 2.64 0 5.12 1.03 6.99 2.9a9.79 9.79 0 012.9 6.99c0 5.45-4.43 9.87-9.83 9.87z"/></svg>
-                    Book on WhatsApp
+                    {revealing ? "Revealing..." : revealed ? "Open WhatsApp" : "Reveal & Book on WhatsApp"}
                 </button>
                 <button
                     onClick={() => {

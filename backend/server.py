@@ -196,7 +196,7 @@ DESTINATIONS_SEED = [
         "best_season": "Mar – May, Oct – Dec",
         "budget_per_day": 1800,
         "vibe": "Alpine green, prayer flags, orchid pink, kanchenjunga white",
-        "hero_image": "https://images.unsplash.com/photo-1544461772-3ce4b8d92f5f?w=1600",
+        "hero_image": "https://images.pexels.com/photos/2662116/pexels-photo-2662116.jpeg?auto=compress&cs=tinysrgb&w=1600",
         "coords": {"lat": 27.5330, "lng": 88.5122},
         "highlights": ["Tsomgo Lake", "Nathula Pass", "Yumthang valley of flowers", "Pelling Kanchenjunga view", "Rumtek Monastery"],
         "stays": [
@@ -254,7 +254,7 @@ DESTINATIONS_SEED = [
         "best_season": "Mar – Oct",
         "budget_per_day": 2200,
         "vibe": "Ancient monastery gold, alpine mist, prayer wheels",
-        "hero_image": "https://images.unsplash.com/photo-1580500550469-4c1e1a25ca34?w=1600",
+        "hero_image": "https://images.pexels.com/photos/417173/pexels-photo-417173.jpeg?auto=compress&cs=tinysrgb&w=1600",
         "coords": {"lat": 27.5859, "lng": 91.8594},
         "highlights": ["Tawang Monastery (400 yrs old)", "Sela Pass", "Madhuri Lake (Sangetsar)", "PTSO Lake", "Bumla Pass (India-China border)"],
         "stays": [
@@ -476,6 +476,8 @@ async def root():
 async def list_destinations(region: Optional[str] = None):
     q = {"region": region} if region else {}
     docs = await db.destinations.find(q, {"_id": 0}).to_list(100)
+    for d in docs:
+        _strip_contact(d)
     return docs
 
 
@@ -484,7 +486,16 @@ async def get_destination(slug: str):
     doc = await db.destinations.find_one({"slug": slug}, {"_id": 0})
     if not doc:
         raise HTTPException(status_code=404, detail="Destination not found")
+    _strip_contact(doc)
     return doc
+
+
+def _strip_contact(doc: dict):
+    """Remove phone numbers from partner data before returning to client.
+    Contacts are only revealed via the auth-gated /partners/reveal endpoint."""
+    for coll_key in ("rentals", "guides"):
+        for item in doc.get(coll_key, []) or []:
+            item.pop("phone", None)
 
 
 @api_router.get("/destinations/{slug}/reviews")
@@ -837,6 +848,50 @@ async def my_stories(user: User = Depends(get_current_user)):
 
 
 # --- Partner Ratings (rentals + guides) ---
+class RevealRequest(BaseModel):
+    destination_slug: str
+    partner_type: str  # "rental" or "guide"
+    partner_name: str
+
+
+@api_router.post("/partners/reveal")
+async def reveal_partner_contact(body: RevealRequest, user: User = Depends(get_current_user)):
+    if body.partner_type not in ("rental", "guide"):
+        raise HTTPException(status_code=400, detail="partner_type must be rental|guide")
+    dest = await db.destinations.find_one({"slug": body.destination_slug}, {"_id": 0})
+    if not dest:
+        raise HTTPException(status_code=404, detail="Destination not found")
+    pool = dest.get("rentals", []) if body.partner_type == "rental" else dest.get("guides", [])
+    partner = next((p for p in pool if p["name"] == body.partner_name), None)
+    if not partner:
+        raise HTTPException(status_code=404, detail="Partner not found")
+
+    # Log this reveal — becomes the partner's popularity signal + platform leverage
+    await db.partner_reveals.insert_one({
+        "destination_slug": body.destination_slug,
+        "partner_type": body.partner_type,
+        "partner_name": body.partner_name,
+        "user_id": user.user_id,
+        "user_email": user.email,
+        "ts": datetime.now(timezone.utc).isoformat(),
+    })
+    return {"phone": partner.get("phone"), "name": partner["name"]}
+
+
+@api_router.get("/partners/reveal-count/{slug}")
+async def reveal_counts(slug: str):
+    """Public — returns how many yatris have contacted each partner (social proof)."""
+    pipeline = [
+        {"$match": {"destination_slug": slug}},
+        {"$group": {"_id": "$partner_name", "count": {"$sum": 1}}},
+    ]
+    cursor = db.partner_reveals.aggregate(pipeline)
+    out = {}
+    async for row in cursor:
+        out[row["_id"]] = row["count"]
+    return out
+
+
 class PartnerRating(BaseModel):
     destination_slug: str
     partner_type: str  # "rental" or "guide"

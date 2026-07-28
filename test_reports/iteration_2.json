@@ -1,0 +1,33 @@
+{
+  "summary": "Backend-only regression + bug-fix verification for Budget Yatra iteration (broken hero images fix + auth-gated contact reveal). Created pytest suite /app/backend/tests/test_budget_yatra.py with 15 tests covering: hero image URLs (Sikkim/Tawang) return HTTP 200; phone key stripped from public destination responses; reveal endpoint enforces auth (401 without token, 200 with token, 400 for bad partner_type, 404 for unknown partner); reveal-count aggregation increments; partner rating + aggregation still works; regression on /destinations list (11+), meghalaya detail, /stories, /trip/plan (Gemini), and /chat/stream (SSE). All 15/15 passed.",
+  "backend_issues": {
+    "critical": [],
+    "minor": []
+  },
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [
+    "/app/backend/tests/test_budget_yatra.py",
+    "/app/test_reports/pytest/pytest_results.xml"
+  ],
+  "action_items": [],
+  "critical_code_review_comments": [
+    "server.py is 975 lines — consider splitting into routers (destinations, auth, trip, chat, partners, stories) for maintainability.",
+    "_strip_contact() is only invoked on GET /destinations and GET /destinations/{slug}, but /wishlist returns raw destination docs from db.destinations without stripping phone — potential leak of phone numbers via GET /api/wishlist (auth required, but still bypasses the public-hiding intent). Recommend calling _strip_contact() there too.",
+    "Phone numbers are computed deterministically from name via md5 and stored in DB via seed upsert — the 'reveal' log is analytics only; anyone with a seeded session can enumerate every partner phone by looping. Rate-limit or cap reveals per-user/day if monetization matters.",
+    "reveal-count endpoint does not filter by partner_type, so a rental and a guide with the same name would collide (unlikely with current data)."
+  ],
+  "updated_files": [
+    "/app/backend/tests/test_budget_yatra.py (new)"
+  ],
+  "success_rate": {"backend": "100%", "frontend": "not tested (backend-only request)"},
+  "test_credentials": "Seeded per-test via pymongo into test_database: user_id=test-user-<uuid>, session_token=test_session_<uuid>. Cleanup done in fixture teardown.",
+  "seed_data_creation": "One test user + session per pytest session (auto cleaned). Also 1 partner rating on 'Ladakh Bike House, Fort Road' left in db.partner_ratings and a few entries in db.partner_reveals for ladakh (intentional, to verify count aggregation).",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Reusable pytest suite at /app/backend/tests/test_budget_yatra.py. Fixture 'auth_token' seeds a fresh mongo session — no external Google auth needed. Run with: cd /app/backend/tests && python -m pytest test_budget_yatra.py -v. All fixes verified working: (a) sikkim/tawang hero images return 200, (b) phone key never appears in /api/destinations or /api/destinations/{slug}, (c) /api/partners/reveal requires auth and logs to partner_reveals collection, (d) partner rating still works, (e) trip/plan + chat/stream regression pass.",
+  "rca of the issue": "N/A — all reported fixes verified working correctly on first test run."
+}
