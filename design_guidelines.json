@@ -1,0 +1,155 @@
+{
+  "project_name": "Budget Yatra",
+  "app_type": "hybrid_fullstack",
+  "description": "An immersive, editorial travel discovery app focused on authentic Indian destinations (mountains, rivers, hidden gems, homestays). Features dynamic location-based theming and AI trip planning.",
+  "theme_strategy": "Multi-theme Dynamic Context",
+  "theme_details": {
+    "base_theme": {
+      "mode": "light",
+      "background": "#F9F7F3",
+      "text": "#1A1A1A",
+      "primary": "#D97757",
+      "secondary": "#2C4035",
+      "accent": "#E4C5AF",
+      "description": "Warm, earthy, editorial off-white base to act as a blank canvas before destination selection."
+    },
+    "destinations": {
+      "meghalaya": {
+        "background": "#EDF2EE",
+        "text": "#132A1F",
+        "primary": "#367B54",
+        "secondary": "#A3BCA7",
+        "accent": "#C4DFD2",
+        "vibe": "Misty, lush green, rainfall, rivers",
+        "hero_image": "https://images.unsplash.com/photo-1637043765564-a071ff91a09f?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA4Mzl8MHwxfHNlYXJjaHwxfHxtZWdoYWxheWElMjByaXZlciUyMG1pc3R8ZW58MHx8fHwxNzg1MjM0OTQ1fDA&ixlib=rb-4.1.0&q=85"
+      },
+      "ladakh": {
+        "background": "#F3EFE9",
+        "text": "#1F1B18",
+        "primary": "#274F75",
+        "secondary": "#D4A373",
+        "accent": "#8F9FA3",
+        "vibe": "Barren ochre, high altitude stark blue, prayer flags",
+        "hero_image": "https://images.pexels.com/photos/12410632/pexels-photo-12410632.jpeg"
+      },
+      "rishikesh": {
+        "background": "#FDF9F1",
+        "text": "#2C1B11",
+        "primary": "#DF6C32",
+        "secondary": "#31747D",
+        "accent": "#F5E3D1",
+        "vibe": "Spiritual saffron, river teal, sand, peaceful",
+        "hero_image": "https://images.unsplash.com/photo-1719581827279-e9a8d8fce924"
+      },
+      "manali": {
+        "background": "#F4F6F7",
+        "text": "#111820",
+        "primary": "#204639",
+        "secondary": "#8D6E52",
+        "accent": "#D1DDE2",
+        "vibe": "Snow white, pine green, rustic wood, cold breeze",
+        "hero_image": "https://images.pexels.com/photos/14406133/pexels-photo-14406133.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940"
+      },
+      "spiti": {
+        "background": "#E8E6E1",
+        "text": "#1F1D1A",
+        "primary": "#6B5A4B",
+        "secondary": "#8A9EA7",
+        "accent": "#D1C9BE",
+        "vibe": "Raw desert, muted sand, deep altitude blue, silence",
+        "hero_image": "https://images.pexels.com/photos/31346573/pexels-photo-31346573.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940"
+      }
+    }
+  },
+  "typography": {
+    "primary_heading": {
+      "family": "Cabinet Grotesk, sans-serif",
+      "weights": ["800", "900"],
+      "usage": "Hero headers, massive impactful destination titles."
+    },
+    "secondary_heading": {
+      "family": "Cormorant Garamond, serif",
+      "weights": ["400", "600", "700"],
+      "usage": "Section titles, storytelling elements, quotes, reviews to give Indian rooted/editorial feel."
+    },
+    "body": {
+      "family": "Satoshi, sans-serif",
+      "weights": ["400", "500", "700"],
+      "usage": "General body text, readable, modern Gen-Z appeal."
+    },
+    "rules": [
+      "NEVER use Inter, Roboto, Open Sans.",
+      "Headings > 32px MUST use tracking-tight or tracking-tighter.",
+      "Use italic Cormorant Garamond for sub-headings for an elegant magazine look.",
+      "Max hero text size: text-6xl (clamp scaling for mobile)."
+    ]
+  },
+  "layouts": {
+    "landing_page": {
+      "structure": "Immersive Cinematic Hero (100vh) -> Destination Search Bar Overlay -> Staggered Bento Grid of Top Destinations -> Horizontal Scroll for Hidden Gems/Local Food -> Community Stories (Editorial Layout).",
+      "hero_overlay": "bg-black/30 or bg-gradient-to-t from-black/60 to-transparent for text contrast."
+    },
+    "destination_detail": {
+      "structure": "Sticky Glassmorphism Header -> Split Screen or Assymetric layout (Left: Sticky Info/AI Chatbot, Right: Scrollable imagery and homestay/food spots).",
+      "background": "Dynamic based on destination chosen (changes context variables globally)."
+    },
+    "ai_trip_planner": {
+      "structure": "Multi-step modern form using framer-motion (NOT generic steps, make it feel like a conversation) -> Output is a Timeline layout (Vertical line connecting days).",
+      "cards": "Solid background matching theme, subtle 1px border matching primary theme color, NO heavy box-shadow."
+    }
+  },
+  "component_styles": {
+    "buttons": "Pill-shaped (rounded-full). Dark/Primary theme color background, light text. Hover: scale slightly (-translate-y-0.5) with a subtle shadow.",
+    "cards": "Neumorphic/Earthy: Flat backgrounds, 1px border (border-black/5 or theme equivalent), generous padding (p-6 or p-8). Avoid generic floating white cards.",
+    "inputs_and_search": "Large, generous padding. Bottom border only (like a clean minimal line) OR large pill shape for the main destination search.",
+    "ai_chatbot": "Floating overlay or side-drawer. Messages shouldn't look like generic WhatsApp bubbles. Use elegant typography, slight background tint (e.g. bg-theme-accent) for AI, outline for user.",
+    "map_pins": "Custom SVG markers using the destination's primary color. Not default Google/Leaflet blue pins."
+  },
+  "motion_and_animation": {
+    "library": "framer-motion",
+    "page_transitions": "Fade and subtle slide up.",
+    "scroll_reveals": "Staggered fade-up for list items (homestays, food spots).",
+    "micro_interactions": "Hover states on destination cards should slightly scale the background image and reveal an italicized sub-title.",
+    "marquee": "Use react-fast-marquee for an 'Editorial Ribbon' separating sections (e.g., 'Wander. Discover. Authentic. Roots.')."
+  },
+  "accessibility": {
+    "contrast": "Ensure APCA contrast standards. Use text shadow over images.",
+    "motion": "Respect prefers-reduced-motion.",
+    "testing": "All interactive elements MUST have data-testid attributes (kebab-case, role-based)."
+  },
+  "media": {
+    "general_images": [
+      {
+        "category": "Local Street Food",
+        "url": "https://images.pexels.com/photos/38443570/pexels-photo-38443570.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+        "description": "Bustling Indian street food market stall for authentic recommendations."
+      },
+      {
+        "category": "Authentic Homestay",
+        "url": "https://images.pexels.com/photos/36908056/pexels-photo-36908056.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+        "description": "Picturesque mountain village with greenery for homestay sections."
+      }
+    ]
+  },
+  "universal_guidelines_for_main_agent": [
+    "NEVER create generic centered layouts. Use asymmetry, 'Tetris' bento grids (grid-cols-12), and generous negative space.",
+    "Use 2x-3x more spacing (p-8, p-12, p-16) than default standard apps to achieve the editorial magazine look.",
+    "DO NOT use 'transition: all'. Explicitly define transition properties (e.g., transition: transform 0.3s ease, opacity 0.3s ease).",
+    "Avoid AI slop: NO purple gradients, NO emoji icons (use lucide-react or phosphor-icons), NO generic Vercel/Stripe looking cards.",
+    "Implement a ThemeContext (or Zustand store) that holds the current destination string. Use this context to apply dynamic Tailwind utility classes (or CSS variables) to the root container.",
+    "NEVER use fully transparent backgrounds for headers/dropdowns. Use backdrop-blur-xl with bg-white/70 or bg-theme/70.",
+    "Use sonner for toasts.",
+    "When building map features, use react-leaflet with a minimal map tile provider (like CartoDB Positron or a custom Mapbox style if free tier is available, avoiding default noisy OpenStreetMap styles).",
+    "For the UI, prefer Shadcn/UI for logic (forms, dialogs, select) but heavily strip their default Vercel-like styling to match the organic/earthy theme."
+  ],
+  "instructions_to_main_agent": [
+    "1. Setup React app with Tailwind CSS and framer-motion.",
+    "2. Install Cabinet Grotesk, Cormorant Garamond, and Satoshi fonts via Fontshare or Google Fonts.",
+    "3. Create a Global Theme Provider that switches the CSS variables based on the active destination (default to 'base', switchable to 'meghalaya', 'ladakh', etc.).",
+    "4. Build the immersive landing page using the provided hero images. The main search bar should act as the theme trigger.",
+    "5. Build the Destination Detail Page utilizing the chosen theme's colors and fonts, featuring a Map section (react-leaflet) and local food/homestay lists.",
+    "6. Build the AI Trip Planner multi-step form and timeline output.",
+    "7. Integrate the AI Chatbot component.",
+    "8. Ensure all testids are present."
+  ]
+}
