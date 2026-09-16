@@ -35,9 +35,9 @@ export default function Landing() {
             {/* HERO */}
             <section className="relative h-[92vh] overflow-hidden">
                 <img
-                    src="https://images.unsplash.com/photo-1637043765564-a071ff91a09f?crop=entropy&cs=srgb&fm=jpg&w=1920&q=85"
+                    src="https://images.unsplash.com/photo-1637043765564-a071ff91a09f?auto=format&fit=crop&w=2560&q=90"
                     alt="Meghalaya mist"
-                    className="absolute inset-0 w-full h-full object-cover"
+                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 scale-105 hover:scale-100"
                 />
                 <div className="absolute inset-0" style={{ background: "linear-gradient(180deg, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.05) 40%, rgba(0,0,0,0.75) 100%)" }} />
                 <div className="relative z-10 h-full flex flex-col justify-end pb-20 md:pb-28 px-6 md:px-16 max-w-[1400px] mx-auto">
@@ -141,14 +141,14 @@ export default function Landing() {
                             <Sparkles className="w-3.5 h-3.5" /> Powered by Gemini AI
                         </div>
                         <h3 className="font-display text-4xl md:text-6xl tracking-tighter leading-none">
-                            Bataao din, budget & mood.<br />
-                            <span className="font-editorial-italic font-normal">Yatri banayega baaki plan.</span>
+                            Enter your days, budget & vibe.<br />
+                            <span className="font-editorial-italic font-normal">Our AI will handle the rest.</span>
                         </h3>
                         <p className="mt-6 opacity-80 max-w-lg leading-relaxed">
-                            Day-by-day itineraries built around chhoti dukaan chai stalls, family-run homestays, and honest local recommendations. Never a chain hotel in sight.
+                            Day-by-day itineraries built around local tea stalls, family-run homestays, and honest recommendations. Never a commercial chain hotel in sight.
                         </p>
                         <Link to="/planner" data-testid="cta-planner" className="mt-8 inline-flex pill-btn" style={{ background: "rgb(var(--by-bg))", color: "rgb(var(--by-secondary))", borderColor: "transparent" }}>
-                            Plan my Yatra <ArrowUpRight className="w-4 h-4" />
+                            Plan my Trip <ArrowUpRight className="w-4 h-4" />
                         </Link>
                     </div>
                 </div>

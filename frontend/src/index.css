@@ -10,12 +10,12 @@
 @import url('https://unpkg.com/leaflet@1.9.4/dist/leaflet.css');
 
 :root {
-    --by-bg: 249 247 243;         /* #F9F7F3 */
-    --by-text: 26 26 26;           /* #1A1A1A */
-    --by-primary: 217 119 87;      /* #D97757 */
-    --by-secondary: 44 64 53;      /* #2C4035 */
-    --by-accent: 228 197 175;      /* #E4C5AF */
-    --by-muted: 156 146 132;
+    --by-bg: 249 247 243;         /* #F9F7F3 Linen Sand */
+    --by-text: 26 26 26;           /* #1A1A1A Soft Charcoal */
+    --by-primary: 217 119 87;      /* #D97757 Warm Terracotta */
+    --by-secondary: 44 64 53;      /* #2C4035 Deep Forest Sage */
+    --by-accent: 228 197 175;      /* #E4C5AF Soft Muted Sand */
+    --by-muted: 156 146 132;      /* #9C9284 Muted Earth */
 }
 
 /* Destination-specific themes triggered by [data-destination] on root */
@@ -175,37 +175,42 @@ a, button, [role="button"] {
     padding: 0.85rem 1.75rem;
     border-radius: 9999px;
     background: rgb(var(--by-primary));
-    color: rgb(var(--by-bg));
+    color: #ffffff;
     font-weight: 700;
     letter-spacing: -0.01em;
-    transition: transform 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.3s ease, box-shadow 0.3s ease;
     border: 1px solid rgb(var(--by-primary));
     cursor: pointer;
+    box-shadow: 0 4px 14px -3px rgba(217, 119, 87, 0.35);
 }
 .pill-btn:hover {
     transform: translateY(-2px);
-    box-shadow: 0 12px 30px -12px rgba(0, 0, 0, 0.25);
+    box-shadow: 0 14px 28px -8px rgba(217, 119, 87, 0.45);
 }
 .pill-btn.ghost {
     background: transparent;
     color: rgb(var(--by-text));
-    border-color: rgb(var(--by-text) / 0.25);
+    border-color: rgb(var(--by-text) / 0.2);
+    box-shadow: none;
 }
 .pill-btn.ghost:hover {
-    background: rgb(var(--by-text) / 0.05);
+    background: rgb(var(--by-text) / 0.06);
+    border-color: rgb(var(--by-text) / 0.4);
+    transform: translateY(-2px);
 }
 
 /* Card */
 .by-card {
     background: rgb(var(--by-bg));
     border: 1px solid rgb(var(--by-text) / 0.08);
-    border-radius: 20px;
+    border-radius: 24px;
     padding: 1.5rem;
-    transition: transform 0.3s ease, border-color 0.3s ease;
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.35s ease, box-shadow 0.35s ease;
 }
 .by-card:hover {
-    border-color: rgb(var(--by-primary) / 0.5);
-    transform: translateY(-3px);
+    border-color: rgb(var(--by-primary) / 0.4);
+    transform: translateY(-4px);
+    box-shadow: 0 20px 40px -15px rgba(217, 119, 87, 0.12);
 }
 
 /* Input */
@@ -226,12 +231,34 @@ a, button, [role="button"] {
 }
 .by-input::placeholder { color: rgb(var(--by-text) / 0.4); }
 
-/* Glass header */
+/* Glass header with modern frosted backdrop & soft shadow */
 .glass {
-    background: rgb(var(--by-bg) / 0.72);
-    backdrop-filter: blur(18px) saturate(140%);
-    -webkit-backdrop-filter: blur(18px) saturate(140%);
-    border-bottom: 1px solid rgb(var(--by-text) / 0.06);
+    background: rgb(var(--by-bg) / 0.45);
+    backdrop-filter: blur(18px) saturate(180%);
+    -webkit-backdrop-filter: blur(18px) saturate(180%);
+    border-bottom: 1px solid rgb(var(--by-text) / 0.08);
+    box-shadow: 0 10px 30px -10px rgba(28, 25, 23, 0.05);
+    transition: background-color 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+}
+
+/* Link underline hover animation */
+.link-underline {
+    position: relative;
+    transition: color 0.3s ease;
+}
+.link-underline::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 0%;
+    height: 2px;
+    background: rgb(var(--by-primary));
+    border-radius: 99px;
+    transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.link-underline:hover::after {
+    width: 100%;
 }
 
 /* hero text shadow */

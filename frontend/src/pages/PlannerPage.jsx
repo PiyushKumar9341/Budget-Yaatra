@@ -4,8 +4,9 @@ import { useSearchParams } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useTheme } from "@/context/ThemeContext";
 import { useAuth } from "@/context/AuthContext";
-import { Sparkles, ArrowRight, Save, Wallet, Calendar, Compass, BookHeart } from "lucide-react";
+import { Sparkles, ArrowRight, Save, Wallet, Calendar, Compass, BookHeart, Printer, Share2, MapPin, Train } from "lucide-react";
 import { toast } from "sonner";
+import PackingListWidget from "@/components/PackingListWidget";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
@@ -17,6 +18,21 @@ const STYLES = [
     { key: "balanced", label: "Balanced Mix", icon: Calendar },
 ];
 
+const STARTING_CITIES = [
+    { name: "Delhi", icon: "🏙️" },
+    { name: "Mumbai", icon: "🌊" },
+    { name: "Bengaluru", icon: "🌳" },
+    { name: "Kolkata", icon: "🛺" },
+];
+
+// Fare estimates by city & destination type
+const TRANSPORT_ESTIMATES = {
+    "Delhi": { sleeper: 800, ac3: 1800, flight: 4500 },
+    "Mumbai": { sleeper: 1200, ac3: 2400, flight: 5800 },
+    "Bengaluru": { sleeper: 1400, ac3: 2600, flight: 6200 },
+    "Kolkata": { sleeper: 650, ac3: 1500, flight: 3800 },
+};
+
 export default function PlannerPage() {
     const { setDestination } = useTheme();
     const { user } = useAuth();
@@ -24,7 +40,7 @@ export default function PlannerPage() {
     const initialDest = params.get("dest") || "";
 
     const [dests, setDests] = useState([]);
-    const [form, setForm] = useState({ destination_slug: initialDest, days: 4, budget: 8000, travel_style: "balanced", preferences: "" });
+    const [form, setForm] = useState({ destination_slug: initialDest, origin_city: "Delhi", days: 4, budget: 8000, travel_style: ["balanced"], preferences: "" });
     const [step, setStep] = useState(0);
     const [plan, setPlan] = useState(null);
     const [loading, setLoading] = useState(false);
@@ -38,6 +54,21 @@ export default function PlannerPage() {
         if (form.destination_slug) setDestination(form.destination_slug);
     }, [form.destination_slug, setDestination]);
 
+    const toggleStyle = (key) => {
+        const current = Array.isArray(form.travel_style) ? form.travel_style : [form.travel_style];
+        if (current.includes(key)) {
+            if (current.length > 1) {
+                setForm({ ...form, travel_style: current.filter(k => k !== key) });
+            }
+        } else {
+            if (current.length < 3) {
+                setForm({ ...form, travel_style: [...current, key] });
+            } else {
+                toast.info("You can select up to 3 travel styles");
+            }
+        }
+    };
+
     const next = () => setStep((s) => Math.min(s + 1, 4));
     const back = () => setStep((s) => Math.max(s - 1, 0));
 
@@ -46,8 +77,10 @@ export default function PlannerPage() {
         setLoading(true);
         try {
             const res = await axios.post(`${API}/trip/plan`, form);
+            res.data.origin_city = form.origin_city;
             setPlan(res.data);
             setStep(5);
+            window.scrollTo({ top: 0, behavior: "smooth" });
         } catch (e) {
             toast.error("AI planner failed — try smaller days or different budget");
         } finally { setLoading(false); }
@@ -63,14 +96,14 @@ export default function PlannerPage() {
 
     return (
         <div className="max-w-[1200px] mx-auto px-6 md:px-10 py-12">
-            <div className="mb-10">
+            <div className="mb-10 print:hidden">
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs uppercase tracking-widest" style={{ background: "rgb(var(--by-accent) / 0.6)" }}>
                     <Sparkles className="w-3.5 h-3.5" /> AI Trip Planner
                 </div>
                 <h1 className="font-display text-5xl md:text-7xl tracking-tighter mt-4" data-testid="planner-heading">
-                    Plan your <span className="font-editorial-italic font-normal">yatra</span>
+                    Plan your <span className="font-editorial-italic font-normal">trip</span>
                 </h1>
-                <p className="font-editorial-italic text-xl mt-3 opacity-70">Bataao thoda sa. Yatri banayega puri story.</p>
+                <p className="font-editorial-italic text-xl mt-3 opacity-70">Tell us your preferences. Our AI will craft your custom itinerary.</p>
             </div>
 
             {step < 5 && (
@@ -80,8 +113,8 @@ export default function PlannerPage() {
                         <motion.div key={step} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} transition={{ duration: 0.35 }}>
                             {step === 0 && (
                                 <div>
-                                    <h2 className="font-display text-3xl tracking-tight mb-6">Kaha jaana hai?</h2>
-                                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                                    <h2 className="font-display text-3xl tracking-tight mb-4">Where do you want to go?</h2>
+                                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-6">
                                         {dests.map((d) => (
                                             <button key={d.slug} data-testid={`plan-dest-${d.slug}`} onClick={() => setForm({ ...form, destination_slug: d.slug })}
                                                 className={`p-4 rounded-2xl text-left border transition-all ${form.destination_slug === d.slug ? "border-2" : "border"}`}
@@ -91,13 +124,31 @@ export default function PlannerPage() {
                                             </button>
                                         ))}
                                     </div>
+
+                                    <h3 className="font-display text-lg tracking-tight mb-2 opacity-90">Where are you starting from?</h3>
+                                    <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                                         {STARTING_CITIES.map((c) => (
+                                            <button 
+                                                key={c.name}
+                                                onClick={() => setForm({ ...form, origin_city: c.name })}
+                                                className="p-3 rounded-xl border text-sm flex items-center gap-2 transition"
+                                                style={{
+                                                    borderColor: form.origin_city === c.name ? "rgb(var(--by-primary))" : "rgb(var(--by-text) / 0.15)",
+                                                    background: form.origin_city === c.name ? "rgb(var(--by-primary) / 0.12)" : "transparent",
+                                                    fontWeight: form.origin_city === c.name ? "600" : "400"
+                                                }}
+                                            >
+                                                <span>{c.icon}</span> {c.name}
+                                            </button>
+                                        ))}
+                                    </div>
                                 </div>
                             )}
                             {step === 1 && (
                                 <div>
-                                    <h2 className="font-display text-3xl tracking-tight mb-6">Kitne din?</h2>
+                                    <h2 className="font-display text-3xl tracking-tight mb-6">How many days?</h2>
                                     <input type="range" min="1" max="14" value={form.days} onChange={(e) => setForm({ ...form, days: +e.target.value })} className="w-full accent-current" data-testid="plan-days" />
-                                    <p className="text-4xl font-display mt-4">{form.days} <span className="font-editorial-italic text-xl opacity-70">{form.days === 1 ? "din" : "din"}</span></p>
+                                    <p className="text-4xl font-display mt-4">{form.days} <span className="font-editorial-italic text-xl opacity-70">{form.days === 1 ? "day" : "days"}</span></p>
                                 </div>
                             )}
                             {step === 2 && (
@@ -110,15 +161,21 @@ export default function PlannerPage() {
                             )}
                             {step === 3 && (
                                 <div>
-                                    <h2 className="font-display text-3xl tracking-tight mb-6">Vibe kya hai?</h2>
+                                    <div className="flex items-center justify-between mb-4">
+                                        <h2 className="font-display text-3xl tracking-tight">Select travel styles</h2>
+                                        <span className="text-xs px-3 py-1 rounded-full font-semibold border" style={{ background: "rgb(var(--by-primary) / 0.1)", borderColor: "rgb(var(--by-primary) / 0.2)", color: "rgb(var(--by-primary))" }}>
+                                            Pick 1 to 3 styles ({Array.isArray(form.travel_style) ? form.travel_style.length : 1}/3)
+                                        </span>
+                                    </div>
                                     <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                                         {STYLES.map((s) => {
                                             const Icon = s.icon;
-                                            const active = form.travel_style === s.key;
+                                            const active = Array.isArray(form.travel_style) ? form.travel_style.includes(s.key) : form.travel_style === s.key;
                                             return (
-                                                <button key={s.key} data-testid={`plan-style-${s.key}`} onClick={() => setForm({ ...form, travel_style: s.key })}
-                                                    className="p-5 rounded-2xl text-left border transition-all"
-                                                    style={{ borderColor: active ? "rgb(var(--by-primary))" : "rgb(var(--by-text) / 0.1)", background: active ? "rgb(var(--by-primary) / 0.08)" : "transparent", borderWidth: active ? 2 : 1 }}>
+                                                <button key={s.key} data-testid={`plan-style-${s.key}`} onClick={() => toggleStyle(s.key)}
+                                                    className="p-5 rounded-2xl text-left border transition-all relative"
+                                                    style={{ borderColor: active ? "rgb(var(--by-primary))" : "rgb(var(--by-text) / 0.1)", background: active ? "rgb(var(--by-primary) / 0.12)" : "transparent", borderWidth: active ? 2 : 1 }}>
+                                                    {active && <span className="absolute top-3 right-3 text-xs px-1.5 py-0.5 rounded-md font-bold text-white" style={{ background: "rgb(var(--by-primary))" }}>✓</span>}
                                                     <Icon className="w-5 h-5 mb-2" />
                                                     <p className="font-display text-lg tracking-tight">{s.label}</p>
                                                 </button>
@@ -129,7 +186,7 @@ export default function PlannerPage() {
                             )}
                             {step === 4 && (
                                 <div>
-                                    <h2 className="font-display text-3xl tracking-tight mb-6">Koi special preference?</h2>
+                                    <h2 className="font-display text-3xl tracking-tight mb-6">Any special preferences?</h2>
                                     <textarea value={form.preferences} onChange={(e) => setForm({ ...form, preferences: e.target.value })}
                                         placeholder="e.g. Vegetarian only, love photography, solo female traveller, no early mornings..."
                                         rows={4} className="by-input resize-none" data-testid="plan-prefs" />
@@ -144,7 +201,7 @@ export default function PlannerPage() {
                             <button onClick={next} className="pill-btn" data-testid="plan-next">Next <ArrowRight className="w-4 h-4" /></button>
                         ) : (
                             <button onClick={generate} disabled={loading} className="pill-btn disabled:opacity-50" data-testid="plan-generate">
-                                {loading ? "Yatri soch raha hai..." : <>Generate my Yatra <Sparkles className="w-4 h-4" /></>}
+                                {loading ? "Crafting your itinerary..." : <>Generate My Trip <Sparkles className="w-4 h-4" /></>}
                             </button>
                         )}
                     </div>
@@ -169,8 +226,25 @@ function StepProgress({ step, total }) {
 }
 
 function PlanResult({ plan, onSave, onRestart }) {
+    const originCity = plan.origin_city || "Delhi";
+    const transportInfo = TRANSPORT_ESTIMATES[originCity] || TRANSPORT_ESTIMATES["Delhi"];
+
+    const handlePrintPDF = () => {
+        window.print();
+    };
+
+    const handleWhatsAppShare = () => {
+        const text = `*Budget Yatra Trip Plan to ${plan.destination?.name}*\n` +
+            `*Title:* ${plan.title}\n` +
+            `*Estimated Cost:* ₹${plan.total_estimated_cost?.toLocaleString("en-IN")}\n` +
+            `*Starting From:* ${originCity}\n\n` +
+            `Planned via Budget Yaatra (http://localhost:3000)`;
+        const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
+        window.open(url, '_blank');
+    };
+
     return (
-        <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} data-testid="plan-result">
+        <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} data-testid="plan-result" className="printable-plan">
             <div className="relative rounded-3xl overflow-hidden mb-8">
                 <img src={plan.destination.hero_image} alt="" className="w-full h-64 object-cover" />
                 <div className="absolute inset-0" style={{ background: "linear-gradient(180deg, rgba(0,0,0,0.2), rgba(0,0,0,0.75))" }} />
@@ -182,11 +256,48 @@ function PlanResult({ plan, onSave, onRestart }) {
                 </div>
             </div>
 
-            <div className="flex gap-3 mb-8">
-                <button onClick={onSave} className="pill-btn" data-testid="plan-save"><Save className="w-4 h-4" /> Save to My Trips</button>
-                <button onClick={onRestart} className="pill-btn ghost" data-testid="plan-restart">Plan another</button>
+            {/* Action Bar */}
+            <div className="flex flex-wrap gap-3 mb-8 print:hidden">
+                <button onClick={onSave} className="pill-btn" data-testid="plan-save">
+                    <Save className="w-4 h-4" /> Save to My Trips
+                </button>
+                <button onClick={handlePrintPDF} className="pill-btn ghost border border-stone-700">
+                    <Printer className="w-4 h-4 text-emerald-400" /> Export PDF / Print
+                </button>
+                <button onClick={handleWhatsAppShare} className="pill-btn ghost border border-emerald-800 text-emerald-400">
+                    <Share2 className="w-4 h-4" /> Share on WhatsApp
+                </button>
+                <button onClick={onRestart} className="pill-btn ghost" data-testid="plan-restart">
+                    Plan another
+                </button>
             </div>
 
+            {/* Transport Estimator Card */}
+            <div className="by-card mb-8">
+                <div className="flex items-center gap-2 mb-4 font-semibold text-base" style={{ color: "rgb(var(--by-primary))" }}>
+                    <Train className="w-5 h-5" />
+                    <span className="font-display tracking-tight text-lg">Estimated Transport Fares from {originCity} to {plan.destination?.name}</span>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+                    <div className="p-4 rounded-xl border" style={{ borderColor: "rgb(var(--by-text) / 0.1)", background: "rgb(var(--by-text) / 0.03)" }}>
+                        <span className="opacity-70 block mb-1 font-editorial text-sm">Train (Sleeper)</span>
+                        <span className="font-display font-bold text-xl block">₹{transportInfo.sleeper}</span>
+                        <span className="opacity-50 block text-[11px] mt-1">Approx 1-way fare</span>
+                    </div>
+                    <div className="p-4 rounded-xl border" style={{ borderColor: "rgb(var(--by-text) / 0.1)", background: "rgb(var(--by-text) / 0.03)" }}>
+                        <span className="opacity-70 block mb-1 font-editorial text-sm">Train (3AC) / Bus</span>
+                        <span className="font-display font-bold text-xl block">₹{transportInfo.ac3}</span>
+                        <span className="opacity-50 block text-[11px] mt-1">Comfort budget option</span>
+                    </div>
+                    <div className="p-4 rounded-xl border" style={{ borderColor: "rgb(var(--by-text) / 0.1)", background: "rgb(var(--by-text) / 0.03)" }}>
+                        <span className="opacity-70 block mb-1 font-editorial text-sm">Flight (Economy)</span>
+                        <span className="font-display font-bold text-xl block">₹{transportInfo.flight}</span>
+                        <span className="opacity-50 block text-[11px] mt-1">Fastest travel</span>
+                    </div>
+                </div>
+            </div>
+
+            {/* Day-by-Day Timeline */}
             <div className="relative pl-8 md:pl-12 border-l-2" style={{ borderColor: "rgb(var(--by-primary) / 0.4)" }}>
                 {plan.days?.map((d, i) => (
                     <motion.div key={i} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.08 }} className="mb-10 relative">
@@ -209,14 +320,9 @@ function PlanResult({ plan, onSave, onRestart }) {
                 ))}
             </div>
 
-            {plan.packing_tips?.length > 0 && (
-                <div className="by-card mt-8">
-                    <h4 className="font-display text-2xl tracking-tight mb-3">Packing tips</h4>
-                    <ul className="list-disc pl-5 space-y-1 font-editorial text-lg">
-                        {plan.packing_tips.map((t, i) => <li key={i}>{t}</li>)}
-                    </ul>
-                </div>
-            )}
+            {/* Packing List Widget */}
+            <PackingListWidget destinationName={plan.destination?.name} items={plan.packing_tips || []} />
+
             {plan.local_etiquette?.length > 0 && (
                 <div className="by-card mt-5">
                     <h4 className="font-display text-2xl tracking-tight mb-3">Local etiquette</h4>
@@ -228,3 +334,4 @@ function PlanResult({ plan, onSave, onRestart }) {
         </motion.div>
     );
 }
+

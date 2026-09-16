@@ -6,10 +6,11 @@ import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import L from "leaflet";
 import { useTheme } from "@/context/ThemeContext";
 import { useAuth } from "@/context/AuthContext";
-import { Heart, MessageCircle, MapPin, Utensils, BedDouble, Star, Calendar, Wallet, Bike, UserRound, Phone } from "lucide-react";
+import { Heart, MessageCircle, MapPin, Utensils, BedDouble, Star, Calendar, Wallet, Bike, UserRound, Phone, CloudSun, Car, Thermometer, Luggage } from "lucide-react";
 import ChatDrawer from "@/components/ChatDrawer";
 import ReviewForm from "@/components/ReviewForm";
 import PartnerRateModal from "@/components/PartnerRateModal";
+import CabPoolModal from "@/components/CabPoolModal";
 import { toast } from "sonner";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
@@ -27,9 +28,11 @@ export default function DestinationPage() {
     const { setDestination } = useTheme();
     const { user } = useAuth();
     const [dest, setDest] = useState(null);
+    const [weather, setWeather] = useState(null);
     const [reviews, setReviews] = useState([]);
     const [stories, setStories] = useState([]);
     const [chatOpen, setChatOpen] = useState(false);
+    const [cabPoolOpen, setCabPoolOpen] = useState(false);
     const [inWishlist, setInWishlist] = useState(false);
     const [partnerRatings, setPartnerRatings] = useState({});
     const [rateTarget, setRateTarget] = useState(null); // {type, name}
@@ -41,11 +44,13 @@ export default function DestinationPage() {
     useEffect(() => {
         setDestination(slug);
         axios.get(`${API}/destinations/${slug}`).then((r) => setDest(r.data)).catch(() => {});
+        axios.get(`${API}/weather/${slug}`).then((r) => setWeather(r.data)).catch(() => {});
         axios.get(`${API}/destinations/${slug}/reviews`).then((r) => setReviews(r.data)).catch(() => {});
         axios.get(`${API}/stories?destination_slug=${slug}`).then((r) => setStories(r.data.slice(0, 3))).catch(() => {});
         fetchRatings();
         return () => setDestination("base");
     }, [slug, setDestination]);
+
 
     useEffect(() => {
         if (!user) return setInWishlist(false);
@@ -86,6 +91,9 @@ export default function DestinationPage() {
                         <button data-testid="wishlist-toggle" onClick={toggleWishlist} className="pill-btn" style={{ background: inWishlist ? rgbColor : "rgba(255,255,255,0.9)", color: inWishlist ? "white" : "#111", borderColor: "transparent" }}>
                             <Heart className={`w-4 h-4 ${inWishlist ? "fill-current" : ""}`} /> {inWishlist ? "Saved" : "Save this Yatra"}
                         </button>
+                        <button onClick={() => setCabPoolOpen(true)} className="pill-btn" style={{ background: "#e8873a", color: "white", borderColor: "transparent" }}>
+                            <Car className="w-4 h-4" /> Yaatri Pool (Cab Share)
+                        </button>
                         <button data-testid="chat-open" onClick={() => setChatOpen(true)} className="pill-btn ghost" style={{ background: "rgba(255,255,255,0.15)", color: "white", borderColor: "rgba(255,255,255,0.35)" }}>
                             <MessageCircle className="w-4 h-4" /> Ask Yatri (AI)
                         </button>
@@ -96,13 +104,49 @@ export default function DestinationPage() {
                 </div>
             </section>
 
-            {/* QUICK STATS */}
-            <section className="max-w-[1400px] mx-auto px-6 md:px-10 py-10 grid grid-cols-2 md:grid-cols-4 gap-5">
-                <Stat icon={Calendar} label="Best season" value={dest.best_season} />
-                <Stat icon={Wallet} label="Budget/day" value={`₹${dest.budget_per_day}`} />
-                <Stat icon={MapPin} label="Region" value={dest.region} />
-                <Stat icon={Star} label="Vibe" value={dest.vibe.split(",")[0]} />
+            {/* QUICK STATS & WEATHER WIDGET */}
+            <section className="max-w-[1400px] mx-auto px-6 md:px-10 py-10 space-y-6">
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
+                    <Stat icon={Calendar} label="Best season" value={dest.best_season} />
+                    <Stat icon={Wallet} label="Budget/day" value={`₹${dest.budget_per_day}`} />
+                    <Stat icon={MapPin} label="Region" value={dest.region} />
+                    <Stat icon={Star} label="Vibe" value={dest.vibe.split(",")[0]} />
+                </div>
+
+                {weather && (
+                    <div className="bg-stone-900/90 border border-stone-800 rounded-3xl p-6 md:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 shadow-xl">
+                        <div className="flex items-center gap-4">
+                            <div className="p-4 bg-amber-500/10 text-amber-400 rounded-2xl border border-amber-500/20">
+                                <CloudSun className="w-8 h-8" />
+                            </div>
+                            <div>
+                                <span className="text-xs uppercase tracking-widest text-stone-400">Current Weather & Climate</span>
+                                <div className="flex items-baseline gap-3 mt-1">
+                                    <span className="font-display text-4xl text-stone-100">{weather.temp}</span>
+                                    <span className="text-emerald-400 font-semibold text-base">{weather.condition}</span>
+                                </div>
+                                <p className="text-xs text-stone-400 mt-1">Humidity: {weather.humidity} · Peak Season: {weather.best_months}</p>
+                            </div>
+                        </div>
+
+                        {weather.packing?.length > 0 && (
+                            <div className="bg-stone-800/40 border border-stone-800/80 rounded-2xl p-4 max-w-md w-full">
+                                <span className="text-xs font-semibold text-stone-300 flex items-center gap-1.5 mb-2">
+                                    <Luggage className="w-3.5 h-3.5 text-emerald-400" /> Recommended Packing Essentials
+                                </span>
+                                <div className="flex flex-wrap gap-1.5">
+                                    {weather.packing.map((item, idx) => (
+                                        <span key={idx} className="text-[11px] px-2.5 py-1 bg-stone-800 border border-stone-700/60 rounded-lg text-stone-300">
+                                            {item}
+                                        </span>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                )}
             </section>
+
 
             {/* HIGHLIGHTS */}
             <section className="max-w-[1400px] mx-auto px-6 md:px-10 py-8">
@@ -120,7 +164,7 @@ export default function DestinationPage() {
             {/* STAYS */}
             <section className="max-w-[1400px] mx-auto px-6 md:px-10 py-12">
                 <div className="flex items-end justify-between mb-8">
-                    <h2 className="font-display text-4xl md:text-5xl tracking-tighter">Roots ke sath so</h2>
+                    <h2 className="font-display text-4xl md:text-5xl tracking-tighter">Authentic Local Stays</h2>
                     <p className="font-editorial-italic opacity-70 hidden md:block">Homestays, tents, village homes</p>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-5" data-testid="stays-grid">
@@ -142,7 +186,7 @@ export default function DestinationPage() {
             {/* FOOD */}
             <section className="max-w-[1400px] mx-auto px-6 md:px-10 py-12">
                 <div className="flex items-end justify-between mb-8">
-                    <h2 className="font-display text-4xl md:text-5xl tracking-tighter">Chhoti dukaan, badi baat</h2>
+                    <h2 className="font-display text-4xl md:text-5xl tracking-tighter">Local Food & Eateries</h2>
                     <p className="font-editorial-italic opacity-70 hidden md:block">Local dhabas & family kitchens</p>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-5" data-testid="food-grid">
@@ -165,8 +209,8 @@ export default function DestinationPage() {
                 <section className="max-w-[1400px] mx-auto px-6 md:px-10 py-12">
                     <div className="flex items-end justify-between mb-8">
                         <div>
-                            <p className="font-editorial-italic opacity-70">Ghumne ka intezaam</p>
-                            <h2 className="font-display text-4xl md:text-5xl tracking-tighter">Rent a ride</h2>
+                            <p className="font-editorial-italic opacity-70">Local Transport Options</p>
+                            <h2 className="font-display text-4xl md:text-5xl tracking-tighter">Rent a Ride</h2>
                         </div>
                         <p className="font-editorial-italic opacity-70 hidden md:block">Bikes, autos, cabs — union rate, no commission</p>
                     </div>
@@ -197,8 +241,8 @@ export default function DestinationPage() {
                 <section className="max-w-[1400px] mx-auto px-6 md:px-10 py-12">
                     <div className="flex items-end justify-between mb-8">
                         <div>
-                            <p className="font-editorial-italic opacity-70">Kahaani sunane wale</p>
-                            <h2 className="font-display text-4xl md:text-5xl tracking-tighter">Local guides</h2>
+                            <p className="font-editorial-italic opacity-70">Storytellers & Cultural Experts</p>
+                            <h2 className="font-display text-4xl md:text-5xl tracking-tighter">Verified Local Guides</h2>
                         </div>
                         <p className="font-editorial-italic opacity-70 hidden md:block">Real locals · real stories</p>
                     </div>
@@ -337,6 +381,7 @@ export default function DestinationPage() {
             </section>
 
             <ChatDrawer open={chatOpen} onClose={() => setChatOpen(false)} destSlug={slug} destName={dest.name} />
+            <CabPoolModal destinationSlug={slug} destinationName={dest.name} isOpen={cabPoolOpen} onClose={() => setCabPoolOpen(false)} />
             {rateTarget && (
                 <PartnerRateModal
                     open={!!rateTarget}

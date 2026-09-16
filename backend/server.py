@@ -9,7 +9,7 @@ from motor.motor_asyncio import AsyncIOMotorClient
 import os, uuid, logging, json, httpx
 from pathlib import Path
 from pydantic import BaseModel, Field
-from typing import List, Optional
+from typing import List, Optional, Union
 from datetime import datetime, timezone, timedelta
 
 from emergentintegrations.llm.chat import LlmChat, UserMessage, TextDelta, StreamDone
@@ -407,8 +407,9 @@ class TripPlanRequest(BaseModel):
     destination_slug: str
     days: int = Field(ge=1, le=14)
     budget: int = Field(ge=500)
-    travel_style: str = "balanced"  # adventure, spiritual, chill, family, balanced
+    travel_style: Union[List[str], str] = "balanced"  # multi-select or single
     preferences: Optional[str] = ""
+
 
 class ChatMessage(BaseModel):
     session_id: str
@@ -518,9 +519,10 @@ async def plan_trip(req: TripPlanRequest):
         "hidden gems, local dhabas, small shops, homestays. NEVER recommend big commercial hotels/chains. "
         "Always return valid JSON only, no markdown, no prose outside JSON."
     )
+    style_text = ", ".join(req.travel_style) if isinstance(req.travel_style, list) else str(req.travel_style)
     user_prompt = f"""Plan a {req.days}-day trip to {dest['name']}, India for a solo/small-group traveller.
 Total budget: ₹{req.budget}
-Style: {req.travel_style}
+Style: {style_text}
 Extra preferences: {req.preferences or 'none'}
 
 Known local stays: {json.dumps([s['name'] for s in dest['stays']])}
@@ -597,6 +599,94 @@ async def save_trip(body: SavePlan, user: User = Depends(get_current_user)):
 async def my_trips(user: User = Depends(get_current_user)):
     docs = await db.saved_trips.find({"user_id": user.user_id}, {"_id": 0}).sort("created_at", -1).to_list(50)
     return docs
+
+
+# --- Cab Pool / Ride Share & Weather Endpoints ---
+class CabPoolCreate(BaseModel):
+    destination_slug: str
+    destination_name: str
+    from_location: str
+    to_location: str
+    date: str
+    seats_total: int
+    seats_open: int
+    cost_per_seat: int
+    creator_name: str
+    creator_contact: str
+    note: Optional[str] = ""
+
+class CabPoolJoin(BaseModel):
+    user_name: str
+    user_contact: str
+    seats_requested: int = 1
+
+@api_router.get("/cab-pools")
+async def get_cab_pools(destination_slug: Optional[str] = None):
+    query = {}
+    if destination_slug:
+        query["destination_slug"] = destination_slug
+    pools = await db.cab_pools.find(query, {"_id": 0}).sort("created_at", -1).to_list(100)
+    return pools
+
+@api_router.post("/cab-pools")
+async def create_cab_pool(pool: CabPoolCreate):
+    pool_doc = pool.dict()
+    pool_doc["pool_id"] = f"pool_{uuid.uuid4().hex[:8]}"
+    pool_doc["created_at"] = datetime.now(timezone.utc).isoformat()
+    pool_doc["joined_users"] = []
+    await db.cab_pools.insert_one(pool_doc)
+    pool_doc.pop("_id", None)
+    return pool_doc
+
+@api_router.post("/cab-pools/{pool_id}/join")
+async def join_cab_pool(pool_id: str, req: CabPoolJoin):
+    pool = await db.cab_pools.find_one({"pool_id": pool_id})
+    if not pool:
+        raise HTTPException(status_code=404, detail="Cab pool request not found")
+    if pool.get("seats_open", 0) < req.seats_requested:
+        raise HTTPException(status_code=400, detail="Not enough seats available")
+    new_open = pool.get("seats_open", 0) - req.seats_requested
+    joined = pool.get("joined_users", [])
+    joined.append({
+        "user_name": req.user_name,
+        "user_contact": req.user_contact,
+        "seats": req.seats_requested,
+        "joined_at": datetime.now(timezone.utc).isoformat()
+    })
+    await db.cab_pools.update_one(
+        {"pool_id": pool_id},
+        {"$set": {"seats_open": new_open, "joined_users": joined}}
+    )
+    return {"status": "joined", "seats_remaining": new_open}
+
+
+WEATHER_DATA = {
+    "meghalaya": {"temp": "18°C", "condition": "Misty & Light Rain", "humidity": "88%", "best_months": "Sep – Mar", "packing": ["Rain jacket / Umbrella", "Quick-dry trek pants", "Waterproof boots", "Warm fleece", "Powerbank (10,000mAh+)"]},
+    "ladakh": {"temp": "12°C", "condition": "Sunny & Crisp", "humidity": "25%", "best_months": "May – Sep", "packing": ["Heavy thermal innerwear", "UV Sunscreen (SPF 50+)", "Polarized Sunglasses", "Lip balm & moisturizer", "Diamox / Altitude sickness meds"]},
+    "rishikesh": {"temp": "24°C", "condition": "Pleasant Breeze", "humidity": "60%", "best_months": "Sep – Apr", "packing": ["Modest cotton clothes", "Slip-on shoes / sandals", "Quick-dry shorts for rafting", "Mosquito repellent", "Reusable water bottle"]},
+    "manali": {"temp": "15°C", "condition": "Clear Sky", "humidity": "50%", "best_months": "Oct – Feb (Snow), Mar – Jun", "packing": ["Windcheater jacket", "Thermal innerwear", "Trekking shoes", "Woolen socks & beanie", "Personal first-aid kit"]},
+    "spiti": {"temp": "8°C", "condition": "Cold & Windy", "humidity": "20%", "best_months": "May – Oct", "packing": ["Heavy down jacket", "Thermal gloves & cap", "High-SPF Sunscreen", "Cash (ATM network weak)", "BSNL/Airtel SIM card"]},
+    "sikkim": {"temp": "16°C", "condition": "Cool & Foggy", "humidity": "75%", "best_months": "Mar – May, Oct – Dec", "packing": ["Waterproof jacket", "Layered woolens", "Sturdy walking shoes", "Passport photos for permits", "Motion sickness medicine"]},
+    "kasol": {"temp": "17°C", "condition": "Pine Breeze", "humidity": "55%", "best_months": "Mar – Jun, Sep – Nov", "packing": ["Comfy hoodie / sweatshirt", "Trekking boots for Kheerganga", "Rain poncho", "Headlamp / Torch", "Cash"]},
+    "tawang": {"temp": "9°C", "condition": "Chilly Alpine", "humidity": "65%", "best_months": "Mar – Oct", "packing": ["Heavy woolen jacket", "Thermal thermals", "Inner Line Permit (ILP) copy", "Warm gloves", "Cold cream"]},
+    "kashmir": {"temp": "19°C", "condition": "Mild & Pleasant", "humidity": "50%", "best_months": "Apr – Oct (Summer), Dec – Feb (Snow)", "packing": ["Pashmina / light sweater", "Walking sneakers", "Sun hat & glasses", "Postpaid SIM card", "Camera"]},
+    "coorg": {"temp": "22°C", "condition": "Misty Rainforest", "humidity": "80%", "best_months": "Sep – Mar", "packing": ["Light jacket / cardigan", "Leech socks (for estate treks)", "Umbrella", "Comfortable sneakers", "Insect repellent"]},
+    "andaman": {"temp": "28°C", "condition": "Tropical Sunny", "humidity": "78%", "best_months": "Nov – May", "packing": ["Swimwear & Rash guard", "Reef-safe Sunscreen", "Flip-flops & water shoes", "Waterproof phone pouch", "Light linen clothes"]}
+}
+
+@api_router.get("/weather/{slug}")
+async def get_weather(slug: str):
+    info = WEATHER_DATA.get(slug.lower())
+    if not info:
+        info = {
+            "temp": "22°C",
+            "condition": "Pleasant",
+            "humidity": "60%",
+            "best_months": "Oct – Mar",
+            "packing": ["Comfortable clothing", "Trekking shoes", "Sunscreen", "Power bank"]
+        }
+    return info
+
 
 
 # --- AI Chatbot (SSE stream) ---
