@@ -5,7 +5,7 @@ import { Mountain, Heart, User, LogOut } from "lucide-react";
 import Footer from "@/components/Footer";
 
 export default function Layout({ children }) {
-    const { user, logout } = useAuth();
+    const { user, logout, openAuthModal } = useAuth();
     const navigate = useNavigate();
 
     const [isVisible, setIsVisible] = useState(true);
@@ -31,12 +31,6 @@ export default function Layout({ children }) {
         return () => window.removeEventListener("scroll", handleScroll);
     }, []);
 
-    const handleLogin = () => {
-        // REMINDER: DO NOT HARDCODE THE URL, OR ADD ANY FALLBACKS OR REDIRECT URLS, THIS BREAKS THE AUTH
-        const redirectUrl = window.location.origin + "/";
-        window.location.href = `https://auth.emergentagent.com/?redirect=${encodeURIComponent(redirectUrl)}`;
-    };
-
     return (
         <div className="grain min-h-screen">
             {/* Smart Floating Header (Hides on Scroll Down, Shows on Scroll Up) */}
@@ -48,11 +42,11 @@ export default function Layout({ children }) {
                 <div 
                     className="max-w-[1320px] mx-auto px-6 py-3 rounded-full flex items-center justify-between border transition-all duration-300"
                     style={{
-                        background: isAtTop ? "rgba(253, 250, 244, 0.3)" : "rgba(253, 250, 244, 0.8)",
-                        backdropFilter: "blur(20px) saturate(180%)",
-                        WebkitBackdropFilter: "blur(20px) saturate(180%)",
-                        borderColor: isAtTop ? "rgba(28, 25, 23, 0.08)" : "rgba(28, 25, 23, 0.12)",
-                        boxShadow: isAtTop ? "none" : "0 8px 30px rgba(0,0,0,0.06)"
+                        background: isAtTop ? "rgba(253, 250, 244, 0.12)" : "rgba(253, 250, 244, 0.45)",
+                        backdropFilter: "blur(16px) saturate(180%)",
+                        WebkitBackdropFilter: "blur(16px) saturate(180%)",
+                        borderColor: isAtTop ? "rgba(28, 25, 23, 0.05)" : "rgba(28, 25, 23, 0.08)",
+                        boxShadow: isAtTop ? "none" : "0 8px 32px rgba(0,0,0,0.04)"
                     }}
                 >
                     <Link to="/" data-testid="logo-link" className="flex items-center gap-2.5 group">
@@ -106,13 +100,14 @@ export default function Layout({ children }) {
                                     <Heart className="w-5 h-5" />
                                 </Link>
                                 <div className="flex items-center gap-2">
-                                    {user.picture ? (
-                                        <img src={user.picture} alt={user.name} className="w-9 h-9 rounded-full border border-black/10 object-cover" />
-                                    ) : (
-                                        <div className="w-9 h-9 rounded-full flex items-center justify-center font-bold text-sm" style={{ background: "rgb(var(--by-primary))", color: "#fff" }}>
-                                            <User className="w-4 h-4" />
+                                    <div className="flex items-center gap-2 px-3 py-1 bg-stone-200/50 rounded-full border border-stone-300/50">
+                                        <div className="w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs" style={{ background: "rgb(var(--by-primary))", color: "#fff" }}>
+                                            <User className="w-3.5 h-3.5" />
                                         </div>
-                                    )}
+                                        <span className="text-xs font-semibold font-mono text-stone-800 max-w-[120px] truncate">
+                                            {user.name || user.phone_number}
+                                        </span>
+                                    </div>
                                     <button onClick={() => { logout(); navigate("/"); }} data-testid="logout-btn" className="p-2.5 rounded-full hover:bg-black/5 transition" title="Logout">
                                         <LogOut className="w-5 h-5" />
                                     </button>
@@ -120,11 +115,11 @@ export default function Layout({ children }) {
                             </>
                         ) : (
                             <button 
-                                onClick={handleLogin} 
+                                onClick={openAuthModal} 
                                 data-testid="login-btn" 
                                 className="pill-btn text-sm py-2.5 px-6 shadow-md hover:shadow-lg transition-all duration-300"
                             >
-                                Sign in with Google
+                                Sign in
                             </button>
                         )}
                     </div>

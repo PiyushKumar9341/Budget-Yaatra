@@ -4,14 +4,14 @@ import { AnimatePresence } from "framer-motion";
 import { Toaster } from "sonner";
 import "@/App.css";
 import { ThemeProvider } from "@/context/ThemeContext";
-import { AuthProvider } from "@/context/AuthContext";
+import { AuthProvider, useAuth } from "@/context/AuthContext";
 import Layout from "@/components/Layout";
+import AuthModal from "@/components/AuthModal";
 import { ScrollProgress, PageFade } from "@/components/motion-helpers";
 import Landing from "@/pages/Landing";
 import DestinationPage from "@/pages/DestinationPage";
 import PlannerPage from "@/pages/PlannerPage";
 import MyTripsPage from "@/pages/MyTripsPage";
-import AuthCallback from "@/pages/AuthCallback";
 import StoriesPage from "@/pages/StoriesPage";
 import StoryDetail from "@/pages/StoryDetail";
 import StoryEditor from "@/pages/StoryEditor";
@@ -26,10 +26,8 @@ function ScrollToTop() {
 
 function AppRouter() {
   const location = useLocation();
-  // CRITICAL: detect session_id in URL fragment synchronously (before ProtectedRoute)
-  if (location.hash?.includes("session_id=")) {
-    return <AuthCallback />;
-  }
+  const { isAuthModalOpen, closeAuthModal } = useAuth();
+
   return (
     <Layout>
       <ScrollToTop />
@@ -46,13 +44,13 @@ function AppRouter() {
           <Route path="*" element={<PageFade><Landing /></PageFade>} />
         </Routes>
       </AnimatePresence>
+      <AuthModal isOpen={isAuthModalOpen} onClose={closeAuthModal} />
     </Layout>
   );
 }
 
 function App() {
   useEffect(() => {
-    // Yaha se tab ka title force ho jayega
     document.title = "Budget Yaatra";
   }, []);
 

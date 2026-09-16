@@ -6,7 +6,7 @@ import pytest
 import requests
 from datetime import datetime, timezone, timedelta
 
-BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'https://ai-integrated-dev.preview.emergentagent.com').rstrip('/')
+BASE_URL = os.environ.get('REACT_APP_BACKEND_URL', 'http://127.0.0.1:8000').rstrip('/')
 API = f"{BASE_URL}/api"
 
 
@@ -23,16 +23,16 @@ def auth_token():
     """Seed a fresh user + session directly in mongo via pymongo."""
     from pymongo import MongoClient
     mongo_url = os.environ.get('MONGO_URL', 'mongodb://localhost:27017')
-    db_name = os.environ.get('DB_NAME', 'test_database')
+    db_name = os.environ.get('DB_NAME', 'budget_yatra')
     mc = MongoClient(mongo_url)
     db = mc[db_name]
     user_id = f"test-user-{uuid.uuid4().hex[:10]}"
     token = f"test_session_{uuid.uuid4().hex}"
     db.users.insert_one({
         "user_id": user_id,
-        "email": f"TEST_{user_id}@example.com",
+        "phone_number": "+91 98765 43210",
         "name": "Test Yatri",
-        "picture": "https://via.placeholder.com/150",
+        "picture": None,
         "created_at": datetime.now(timezone.utc).isoformat(),
     })
     db.user_sessions.insert_one({
@@ -217,3 +217,29 @@ class TestRegressionEndpoints:
                     break
         r.close()
         assert got_delta or got_done, "no SSE deltas or done event received"
+
+
+# ---------- Phone OTP Auth Tests ----------
+class TestPhoneOtpAuth:
+    def test_send_otp_success(self, api_client):
+        r = api_client.post(f"{API}/auth/send-otp", json={"phone_number": "9876543210"})
+        assert r.status_code == 200, r.text
+        data = r.json()
+        assert "debug_otp" in data
+        assert len(data["debug_otp"]) == 6
+
+    def test_verify_otp_success(self, api_client):
+        phone = "9876543210"
+        r_send = api_client.post(f"{API}/auth/send-otp", json={"phone_number": phone})
+        otp = r_send.json()["debug_otp"]
+        
+        r_verify = api_client.post(f"{API}/auth/verify-otp", json={
+            "phone_number": phone,
+            "otp": otp,
+            "name": "Test Yatri"
+        })
+        assert r_verify.status_code == 200, r_verify.text
+        user = r_verify.json()["user"]
+        assert user["name"] == "Test Yatri"
+        assert user["phone_number"] == "+91 98765 43210"
+

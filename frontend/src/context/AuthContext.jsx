@@ -2,18 +2,31 @@ import React, { createContext, useContext, useEffect, useState, useCallback } fr
 import axios from "axios";
 
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
-const AuthContext = createContext({ user: null, loading: true, logout: () => {}, refresh: () => {} });
+const AuthContext = createContext({
+    user: null,
+    loading: true,
+    isAuthModalOpen: false,
+    openAuthModal: () => {},
+    closeAuthModal: () => {},
+    sendOtp: async () => {},
+    verifyOtp: async () => {},
+    logout: () => {},
+    refresh: () => {},
+});
 
 export function AuthProvider({ children }) {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+
+    const openAuthModal = () => setIsAuthModalOpen(true);
+    const closeAuthModal = () => setIsAuthModalOpen(false);
 
     const checkAuth = useCallback(async () => {
         try {
             const res = await axios.get(`${API}/auth/me`, { withCredentials: true });
             setUser(res.data);
         } catch (err) {
-            // 401 is expected when not signed in — don't spam the console
             if (err?.response?.status && err.response.status !== 401) {
                 console.warn("[AuthContext] /auth/me failed:", err?.message || err);
             }
@@ -24,22 +37,42 @@ export function AuthProvider({ children }) {
     }, []);
 
     useEffect(() => {
-        // CRITICAL: If returning from OAuth callback, skip the /me check.
-        // AuthCallback will exchange the session_id and establish the session first.
-        if (typeof window !== "undefined" && window.location.hash?.includes("session_id=")) {
-            setLoading(false);
-            return;
-        }
         checkAuth();
     }, [checkAuth]);
 
+    const sendOtp = async (phone_number) => {
+        const res = await axios.post(`${API}/auth/send-otp`, { phone_number });
+        return res.data;
+    };
+
+    const verifyOtp = async (phone_number, otp, name) => {
+        const res = await axios.post(`${API}/auth/verify-otp`, { phone_number, otp, name }, { withCredentials: true });
+        setUser(res.data.user);
+        return res.data;
+    };
+
     const logout = async () => {
-        try { await axios.post(`${API}/auth/logout`, {}, { withCredentials: true }); } catch {}
+        try {
+            await axios.post(`${API}/auth/logout`, {}, { withCredentials: true });
+        } catch {}
         setUser(null);
     };
 
     return (
-        <AuthContext.Provider value={{ user, loading, logout, refresh: checkAuth, setUser }}>
+        <AuthContext.Provider
+            value={{
+                user,
+                loading,
+                isAuthModalOpen,
+                openAuthModal,
+                closeAuthModal,
+                sendOtp,
+                verifyOtp,
+                logout,
+                refresh: checkAuth,
+                setUser,
+            }}
+        >
             {children}
         </AuthContext.Provider>
     );

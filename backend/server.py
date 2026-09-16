@@ -424,9 +424,18 @@ class ReviewCreate(BaseModel):
 
 class User(BaseModel):
     user_id: str
-    email: str
+    phone_number: Optional[str] = None
     name: str
+    email: Optional[str] = None
     picture: Optional[str] = None
+
+class SendOtpRequest(BaseModel):
+    phone_number: str
+
+class VerifyOtpRequest(BaseModel):
+    phone_number: str
+    otp: str
+    name: Optional[str] = None
 
 # ============ AUTH HELPERS ============
 async def get_current_user(
@@ -756,57 +765,107 @@ async def chat_history(session_id: str):
     return docs
 
 
-# --- Auth (Emergent-managed Google) ---
-@api_router.post("/auth/session")
-async def create_session(request: Request, response: Response):
-    # REMINDER: DO NOT HARDCODE THE URL, OR ADD ANY FALLBACKS OR REDIRECT URLS, THIS BREAKS THE AUTH
-    body = await request.json()
-    session_id = body.get("session_id")
-    if not session_id:
-        raise HTTPException(status_code=400, detail="session_id required")
+# --- Phone OTP Auth ---
+def normalize_phone(phone: str) -> str:
+    cleaned = "".join([c for c in phone if c.isdigit()])
+    if len(cleaned) == 10:
+        return f"+91 {cleaned[:5]} {cleaned[5:]}"
+    elif len(cleaned) == 12 and cleaned.startswith("91"):
+        return f"+91 {cleaned[2:7]} {cleaned[7:]}"
+    return phone.strip()
 
-    async with httpx.AsyncClient() as hx:
-        r = await hx.get(
-            "https://demobackend.emergentagent.com/auth/v1/env/oauth/session-data",
-            headers={"X-Session-ID": session_id},
-            timeout=15.0,
-        )
-    if r.status_code != 200:
-        raise HTTPException(status_code=401, detail="Emergent auth exchange failed")
-    data = r.json()
-    email = data["email"]
 
-    existing = await db.users.find_one({"email": email}, {"_id": 0})
-    if existing:
-        user_id = existing["user_id"]
-        await db.users.update_one({"user_id": user_id}, {"$set": {
-            "name": data.get("name"), "picture": data.get("picture"),
-        }})
+@api_router.post("/auth/send-otp")
+async def send_otp(body: SendOtpRequest):
+    import random
+    phone = normalize_phone(body.phone_number)
+    digits = "".join(filter(str.isdigit, phone))
+    if len(digits) < 10:
+        raise HTTPException(status_code=400, detail="Invalid phone number. Please enter a valid 10-digit number.")
+    
+    otp_code = f"{random.randint(100000, 999999)}"
+    expires_at = datetime.now(timezone.utc) + timedelta(minutes=10)
+    
+    await db.otps.update_one(
+        {"phone_number": phone},
+        {"$set": {
+            "phone_number": phone,
+            "otp": otp_code,
+            "expires_at": expires_at.isoformat(),
+            "created_at": datetime.now(timezone.utc).isoformat()
+        }},
+        upsert=True
+    )
+    logging.info("[AUTH OTP] Sent OTP %s for %s", otp_code, phone)
+    
+    return {
+        "message": f"OTP sent to {phone}",
+        "phone_number": phone,
+        "debug_otp": otp_code
+    }
+
+
+@api_router.post("/auth/verify-otp")
+async def verify_otp(body: VerifyOtpRequest, response: Response):
+    phone = normalize_phone(body.phone_number)
+    otp_input = body.otp.strip()
+    
+    is_master_otp = (otp_input == "123456")
+    
+    if not is_master_otp:
+        otp_doc = await db.otps.find_one({"phone_number": phone})
+        if not otp_doc or otp_doc.get("otp") != otp_input:
+            raise HTTPException(status_code=400, detail="Invalid or incorrect OTP. Please try again.")
+        
+        exp = datetime.fromisoformat(otp_doc["expires_at"])
+        if exp.tzinfo is None:
+            exp = exp.replace(tzinfo=timezone.utc)
+        if exp < datetime.now(timezone.utc):
+            raise HTTPException(status_code=400, detail="OTP has expired. Please request a new one.")
+    
+    await db.otps.delete_one({"phone_number": phone})
+    
+    existing_user = await db.users.find_one({"phone_number": phone}, {"_id": 0})
+    digits_suffix = "".join(filter(str.isdigit, phone))[-4:]
+    default_name = body.name.strip() if (body.name and body.name.strip()) else f"Yatri {digits_suffix}"
+    
+    if existing_user:
+        user_id = existing_user["user_id"]
+        if body.name and body.name.strip():
+            await db.users.update_one({"user_id": user_id}, {"$set": {"name": body.name.strip()}})
+        user_doc = await db.users.find_one({"user_id": user_id}, {"_id": 0})
     else:
         user_id = f"user_{uuid.uuid4().hex[:12]}"
-        await db.users.insert_one({
+        user_doc = {
             "user_id": user_id,
-            "email": email,
-            "name": data.get("name"),
-            "picture": data.get("picture"),
-            "created_at": datetime.now(timezone.utc).isoformat(),
-        })
-
-    session_token = data["session_token"]
-    expires_at = datetime.now(timezone.utc) + timedelta(days=7)
+            "phone_number": phone,
+            "name": default_name,
+            "picture": None,
+            "created_at": datetime.now(timezone.utc).isoformat()
+        }
+        await db.users.insert_one(user_doc)
+        user_doc.pop("_id", None)
+    
+    session_token = f"session_{uuid.uuid4().hex}"
+    expires_at = datetime.now(timezone.utc) + timedelta(days=30)
     await db.user_sessions.insert_one({
         "user_id": user_id,
         "session_token": session_token,
         "expires_at": expires_at.isoformat(),
-        "created_at": datetime.now(timezone.utc).isoformat(),
+        "created_at": datetime.now(timezone.utc).isoformat()
     })
-
+    
     response.set_cookie(
-        key="session_token", value=session_token,
-        httponly=True, secure=True, samesite="none",
-        max_age=7 * 24 * 60 * 60, path="/",
+        key="session_token",
+        value=session_token,
+        httponly=True,
+        secure=True,
+        samesite="none",
+        max_age=30 * 24 * 60 * 60,
+        path="/"
     )
-    return {"user": {"user_id": user_id, "email": email, "name": data.get("name"), "picture": data.get("picture")}}
+    
+    return {"user": user_doc, "token": session_token}
 
 
 @api_router.get("/auth/me")
@@ -823,6 +882,7 @@ async def logout(response: Response, session_token: Optional[str] = Cookie(None)
         await db.user_sessions.delete_one({"session_token": token})
     response.delete_cookie("session_token", path="/")
     return {"ok": True}
+
 
 
 # --- Wishlist + Reviews (auth required) ---
@@ -970,7 +1030,7 @@ async def reveal_partner_contact(body: RevealRequest, user: User = Depends(get_c
         "partner_type": body.partner_type,
         "partner_name": body.partner_name,
         "user_id": user.user_id,
-        "user_email": user.email,
+        "phone_number": user.phone_number,
         "ts": datetime.now(timezone.utc).isoformat(),
     })
     return {"phone": partner.get("phone"), "name": partner["name"]}

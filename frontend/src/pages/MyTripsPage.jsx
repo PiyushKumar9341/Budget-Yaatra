@@ -8,7 +8,7 @@ import { Heart, Sparkles } from "lucide-react";
 const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
 
 export default function MyTripsPage() {
-    const { user, loading } = useAuth();
+    const { user, loading, openAuthModal } = useAuth();
     const { setDestination } = useTheme();
     const [wishlist, setWishlist] = useState([]);
     const [trips, setTrips] = useState([]);
@@ -26,6 +26,7 @@ export default function MyTripsPage() {
         <div className="max-w-3xl mx-auto px-6 py-24 text-center">
             <h1 className="font-display text-5xl tracking-tighter">Sign in first</h1>
             <p className="font-editorial-italic text-xl mt-4 opacity-70">Login karo aur apni saved yatras yaha dekho.</p>
+            <button onClick={openAuthModal} className="pill-btn mt-6 font-medium px-8 py-3">Sign in</button>
         </div>
     );
 

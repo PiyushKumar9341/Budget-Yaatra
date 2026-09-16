@@ -26,7 +26,7 @@ const makeIcon = (color) => L.divIcon({
 export default function DestinationPage() {
     const { slug } = useParams();
     const { setDestination } = useTheme();
-    const { user } = useAuth();
+    const { user, openAuthModal } = useAuth();
     const [dest, setDest] = useState(null);
     const [weather, setWeather] = useState(null);
     const [reviews, setReviews] = useState([]);
@@ -60,7 +60,11 @@ export default function DestinationPage() {
     }, [user, slug]);
 
     const toggleWishlist = async () => {
-        if (!user) { toast.error("Please sign in to save trips"); return; }
+        if (!user) {
+            toast.error("Please sign in to save trips");
+            openAuthModal();
+            return;
+        }
         const res = await axios.post(`${API}/wishlist/${slug}`, {}, { withCredentials: true });
         setInWishlist(res.data.added);
         toast.success(res.data.added ? "Saved to your Yatra" : "Removed");
@@ -352,8 +356,9 @@ export default function DestinationPage() {
                 {user ? (
                     <ReviewForm slug={slug} onCreated={(r) => setReviews([r, ...reviews])} />
                 ) : (
-                    <div className="by-card mb-8 text-center py-8">
-                        <p className="font-editorial-italic opacity-80 text-lg">Sign in with Google to share your yatra story ✍️</p>
+                    <div className="by-card mb-8 text-center py-8 cursor-pointer" onClick={openAuthModal}>
+                        <p className="font-editorial-italic opacity-80 text-lg">Sign in to share your yatra story ✍️</p>
+                        <button className="pill-btn text-xs mt-3">Sign in</button>
                     </div>
                 )}
 
@@ -401,7 +406,7 @@ function PartnerCard({ partner, type, icon: Icon, iconLabel, subtitleField, pric
     const [revealing, setRevealing] = useState(false);
 
     const revealAndOpenWA = async () => {
-        if (!userAvailable) { toast.error("Sign in with Google to contact local partners"); return; }
+        if (!userAvailable) { toast.error("Sign in with mobile to contact local partners"); return; }
         if (revealing) return;
         setRevealing(true);
         try {

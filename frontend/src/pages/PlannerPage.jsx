@@ -35,7 +35,7 @@ const TRANSPORT_ESTIMATES = {
 
 export default function PlannerPage() {
     const { setDestination } = useTheme();
-    const { user } = useAuth();
+    const { user, openAuthModal } = useAuth();
     const [params] = useSearchParams();
     const initialDest = params.get("dest") || "";
 
@@ -87,7 +87,7 @@ export default function PlannerPage() {
     };
 
     const savePlan = async () => {
-        if (!user) { toast.error("Sign in to save this trip"); return; }
+        if (!user) { toast.error("Sign in to save this trip"); openAuthModal(); return; }
         try {
             await axios.post(`${API}/trip/save`, { plan }, { withCredentials: true });
             toast.success("Trip saved to My Trips");
