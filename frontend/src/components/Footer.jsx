@@ -294,7 +294,7 @@ export default function Footer() {
                     onClick={() => setActiveModal(null)}
                 >
                     <div 
-                        className="bg-zinc-950 border border-white/15 rounded-2xl p-6 md:p-8 max-w-xl w-full max-h-[85vh] overflow-y-auto shadow-2xl relative text-white"
+                        className="bg-zinc-950 border border-white/15 rounded-2xl p-6 md:p-8 max-w-xl w-full max-h-[85vh] overflow-y-auto shadow-2xl relative text-white [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
                         onClick={(e) => e.stopPropagation()}
                     >
                         {/* Header */}
